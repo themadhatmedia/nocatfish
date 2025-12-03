@@ -1,0 +1,85 @@
+name: nocatfish_app
+description: No Catfish AI - Privacy-focused photo authenticity detection
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.6
+  http: ^1.1.0
+  dio: ^5.9.0
+  # shared_preferences: ^2.2.2
+  get_storage: ^2.1.1
+  # provider: ^6.1.1
+  get: ^4.7.2
+  image_picker: ^1.0.7
+  flutter_secure_storage: ^9.0.0
+  intl: ^0.18.1
+  shimmer: ^3.0.0
+  flutter_animate: ^4.5.0
+  glassmorphism: ^3.0.0
+  lottie: ^3.0.0
+  smooth_page_indicator: ^1.1.0
+  timeago: ^3.7.1
+  flutter_native_splash: ^2.4.6
+  flutter_launcher_icons: ^0.14.4
+  # share_screenshot_widget: 
+  screenshot: ^3.0.0
+  share_plus: ^12.0.0
+  path_provider: ^2.1.5
+  no_screenshot: ^0.3.1
+  flutter_stripe: ^12.1.0
+
+flutter_icons:
+  android: "ic_launcher"
+  # android: true
+  ios: true
+  # adaptive_icon_background: "#fcbc75"
+  image_path: "assets/images/logo-full.png"
+  remove_alpha_ios: true
+  web: 
+    generate: false
+    # image_path: "assets/logo-purple.png"
+    # icon_size: 48 # min:48, max:256, default: 48
+  windows: 
+    generate: false
+  macos: 
+    generate: false
+
+flutter_native_splash:
+  color: "#FDF0DD"
+  # image: assets/images/splash.png
+  android: true
+  ios: true
+  android_12:
+    # image: assets/images/splash-icon.png
+    color: "#FDF0DD"
+    icon_background_color: "#FDF0DD"
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    # - assets/animations/
+
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700
