@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../controllers/upload_controller.dart';
 import '../../utils/app_theme.dart';
@@ -407,8 +408,12 @@ class _UploadScreenState extends State<UploadScreen> {
                       decoration: TextDecoration.underline,
                     ),
                     recognizer: TapGestureRecognizer()
-                      ..onTap = () {
+                      ..onTap = () async {
                         print("Terms of Service clicked");
+                        final url = Uri.parse(AppTheme.terms);
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(url, mode: LaunchMode.externalApplication);
+                        }
                       },
                   ),
                   TextSpan(text: ' & '),
@@ -419,8 +424,12 @@ class _UploadScreenState extends State<UploadScreen> {
                       decoration: TextDecoration.underline,
                     ),
                     recognizer: TapGestureRecognizer()
-                      ..onTap = () {
+                      ..onTap = () async {
                         print("Privacy Policy clicked");
+                        final url = Uri.parse(AppTheme.privacyPolicy);
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(url, mode: LaunchMode.externalApplication);
+                        }
                       },
                   ),
                 ],

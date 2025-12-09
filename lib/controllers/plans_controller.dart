@@ -46,6 +46,11 @@ class PlansController extends GetxController {
 
       final response = await _apiService.getAllPlans(token);
 
+      print('response controller: $response');
+      print('response success: ${response.success}');
+      print('response data: ${response.data}');
+      print('response errorMessage: ${response.errorMessage}');
+
       if (response.success && response.data != null) {
         _plans.value = response.data!.plans;
         if (response.data!.currentPlan != null) {

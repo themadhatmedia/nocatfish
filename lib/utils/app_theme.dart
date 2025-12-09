@@ -7,6 +7,8 @@ class AppTheme {
   static const Color darkOrange = Color(0xFFf89020);
   static const Color green = Colors.green;
   static const Color red = Colors.red;
+  static const String privacyPolicy = 'https://nocatfish.app/privacy-policy';
+  static const String terms = 'https://nocatfish.app/terms-and-conditions';
 
   static const Color primaryColor = brandOrange;
   static const Color backgroundColor = darkNavy;

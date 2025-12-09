@@ -1,13 +1,13 @@
 class StripeConfig {
   static const String publishableKey = String.fromEnvironment(
     'STRIPE_PUBLISHABLE_KEY',
-    defaultValue: 'XXXX',
+    defaultValue: 'XX',
   );
 
   static const String merchantDisplayName = 'No Catfish AI';
   static const String merchantCountryCode = 'US';
   static const String currencyCode = 'usd';
-  static const String secretKey = 'XXXX';
+  static const String secretKey = 'XX';
 
   static bool get isConfigured => publishableKey.isNotEmpty;
 }

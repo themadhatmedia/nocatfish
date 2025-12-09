@@ -340,12 +340,14 @@ class DashboardData {
   final DashboardStatistics statistics;
   final List<RecentResult> recentResults;
   final String privacyNotice;
+  final String tokensBalance;
 
   DashboardData({
     required this.user,
     required this.statistics,
     required this.recentResults,
     required this.privacyNotice,
+    required this.tokensBalance,
   });
 
   factory DashboardData.fromJson(Map<String, dynamic> json) {
@@ -354,6 +356,7 @@ class DashboardData {
       statistics: DashboardStatistics.fromJson(json['statistics']),
       recentResults: (json['recent_results'] as List).map((e) => RecentResult.fromJson(e)).toList(),
       privacyNotice: json['privacy_notice'],
+      tokensBalance: json['tokens_remaining'] != null ? json['tokens_remaining'].toString() : '0',
     );
   }
 }

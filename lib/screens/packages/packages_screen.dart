@@ -108,10 +108,12 @@ class PackagesScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              ...controller.plans.map((plan) => _buildPlanCard(
-                    plan,
-                    controller,
-                  )),
+              ...controller.plans.map(
+                (plan) => _buildPlanCard(
+                  plan,
+                  controller,
+                ),
+              ),
             ],
           ),
         );
@@ -122,7 +124,7 @@ class PackagesScreen extends StatelessWidget {
   Widget _buildCurrentPlanBanner(PlansController controller) {
     final plan = controller.currentPlan!;
     return GlassContainer(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(12),
       child: Row(
         children: [
           Container(
@@ -142,20 +144,30 @@ class PackagesScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Current Plan',
+                Text(
+                  'Current Plan: ${plan.name}',
                   style: TextStyle(
-                    color: Colors.white60,
-                    fontSize: 12,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15.0,
                   ),
                 ),
-                const SizedBox(height: 4),
+                // SizedBox(height: 4),
+                // Text(
+                //   plan.name,
+                //   style: const TextStyle(
+                //     color: Colors.white,
+                //     fontSize: 18,
+                //     fontWeight: FontWeight.bold,
+                //   ),
+                // ),
+                SizedBox(height: 4),
                 Text(
-                  plan.name,
+                  'Balance: ${plan.tokensBalance.toString()} Coins',
                   style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    color: Colors.white60,
+                    fontSize: 15.0,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ],
@@ -233,7 +245,7 @@ class PackagesScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10.0),
             Text(
-              '${plan.tokens} tokens',
+              '${plan.tokens} coins',
               style: const TextStyle(
                 color: Colors.white60,
                 fontSize: 18.0,
@@ -347,6 +359,7 @@ class PackagesScreen extends StatelessWidget {
           snackPosition: SnackPosition.BOTTOM,
           margin: const EdgeInsets.all(16),
         );
+        Future.delayed(Duration(seconds: 2));
         controller.loadPlans();
       } else {
         Get.snackbar(

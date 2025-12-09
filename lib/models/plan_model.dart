@@ -2,6 +2,7 @@ class PlanModel {
   final int id;
   final String name;
   final int tokens;
+  final int tokensBalance;
   final double price;
   final double costPerScan;
   // final String interval;
@@ -16,6 +17,7 @@ class PlanModel {
     required this.name,
     required this.price,
     required this.tokens,
+    required this.tokensBalance,
     required this.costPerScan,
     // required this.interval,
     // required this.maxDailyUploads,
@@ -26,11 +28,13 @@ class PlanModel {
   });
 
   factory PlanModel.fromJson(Map<String, dynamic> json) {
+    print('fromJson: $json');
     return PlanModel(
       id: json['id'],
       name: json['name'] ?? '',
       price: double.parse(json['price'].toString()),
       tokens: int.parse(json['tokens'].toString()),
+      tokensBalance: json['tokens_remaining'] == null ? 0 : int.parse(json['tokens_remaining'].toString()),
       costPerScan: double.parse(json['cost_per_scan'].toString()),
       // interval: json['interval'] ?? 'month',
       // maxDailyUploads: json['max_daily_uploads'] ?? 50,
@@ -46,6 +50,7 @@ class PlanModel {
       'id': id,
       'name': name,
       'tokens': tokens,
+      'tokensBalance': tokensBalance,
       'price': price,
       'cost_per_scan': costPerScan,
       // 'interval': interval,

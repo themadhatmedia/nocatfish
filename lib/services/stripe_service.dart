@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -6,6 +8,7 @@ import 'package:get/get.dart';
 import '../config/stripe_config.dart';
 import '../utils/app_theme.dart';
 import '../widgets/payment_buttons.dart';
+import 'storage_service.dart';
 
 class StripeService {
   static final StripeService _instance = StripeService._internal();
@@ -52,24 +55,30 @@ class StripeService {
       );
       print('paymentInitialClientSecret: $paymentInitialClientSecret');
 
+      var user = StorageService().getUser()!;
+      print('id: ${user['id']}');
+      print('name: ${user['name']}');
+      print('email: ${user['email']}');
+
       final billingDetails = BillingDetails(
-        name: 'Jay Tarpara',
-        email: 'tarparajay00@gmail.com',
-        phone: '+919106141050',
-        address: Address(
-          city: 'Surat',
-          country: 'India',
-          line1: 'Address 1',
-          line2: 'Address 2',
-          postalCode: '395004',
-          state: 'GJ',
-        ),
+        name: '${user['name']}',
+        email: '${user['email']}',
+        // phone: '+919106141050',
+        // address: Address(
+        //   city: 'Surat',
+        //   country: 'India',
+        //   line1: 'Address 1',
+        //   line2: 'Address 2',
+        //   postalCode: '395004',
+        //   state: 'GJ',
+        // ),
       );
 
       final paymentSheetParams = SetupPaymentSheetParameters(
         customFlow: false,
         merchantDisplayName: 'Catfish Scan',
         billingDetails: billingDetails,
+        customerId: user['id'].toString(),
         paymentIntentClientSecret: paymentInitialClientSecret,
         setupIntentClientSecret: paymentInitialClientSecret,
         style: ThemeMode.dark,
@@ -171,38 +180,42 @@ class StripeService {
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Column(
                       children: [
-                        PaymentOptionButton(
-                          icon: Icons.g_mobiledata_rounded,
-                          label: 'Google Pay',
-                          subtitle: 'Pay with your google pay',
-                          onTap: () {
-                            payWith = 'google';
-                            Navigator.pop(context);
-                          },
-                          gradient: LinearGradient(
-                            colors: [
-                              Color(0xFF4285F4),
-                              Color(0xFF34A853),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        PaymentOptionButton(
-                          icon: Icons.apple,
-                          label: 'Apple Pay',
-                          subtitle: 'Pay with your apple pay',
-                          onTap: () {
-                            payWith = 'apple';
-                            Navigator.pop(context);
-                          },
-                          gradient: LinearGradient(
-                            colors: [
-                              Color(0xFF000000),
-                              Color(0xFF434343),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 16),
+                        Platform.isAndroid
+                            ? PaymentOptionButton(
+                                icon: Icons.g_mobiledata_rounded,
+                                label: 'Google Pay',
+                                subtitle: 'Pay with your google pay',
+                                onTap: () {
+                                  payWith = 'google';
+                                  Navigator.pop(context);
+                                },
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Color(0xFF4285F4),
+                                    Color(0xFF34A853),
+                                  ],
+                                ),
+                              )
+                            : Container(),
+                        Platform.isAndroid ? SizedBox(height: 16) : Container(),
+                        Platform.isIOS
+                            ? PaymentOptionButton(
+                                icon: Icons.apple,
+                                label: 'Apple Pay',
+                                subtitle: 'Pay with your apple pay',
+                                onTap: () {
+                                  payWith = 'apple';
+                                  Navigator.pop(context);
+                                },
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Color(0xFF000000),
+                                    Color(0xFF434343),
+                                  ],
+                                ),
+                              )
+                            : Container(),
+                        Platform.isIOS ? SizedBox(height: 16) : Container(),
                         PaymentOptionButton(
                           icon: Icons.credit_card,
                           label: 'Other',

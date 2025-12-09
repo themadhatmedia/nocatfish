@@ -45,4 +45,4 @@ app.*.map.json
 /android/app/release
 
 # stripe key file
-/lib/config/stripe_config.dart
+lib/config/stripe_config.dart
