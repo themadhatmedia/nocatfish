@@ -65,7 +65,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() => _isLoading = false);
 
     if (response.success && mounted) {
-      Get.offAll(() => const HomeScreen());
+      // Get.offAll(() => const HomeScreen());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Registration successful. Please check your email to verify your account.'),
+          backgroundColor: AppTheme.darkOrange,
+        ),
+      );
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
