@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
@@ -180,6 +181,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           const SizedBox(height: 20),
                           CustomTextField(
                             controller: _passwordController,
+                            isPassword: true,
                             label: 'Password',
                             hint: 'Create a password',
                             prefixIcon: Icons.lock_outline,
@@ -206,6 +208,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           const SizedBox(height: 20),
                           CustomTextField(
                             controller: _confirmPasswordController,
+                            isPassword: true,
                             label: 'Confirm Password',
                             hint: 'Re-enter your password',
                             prefixIcon: Icons.lock_outline,
@@ -253,12 +256,48 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                               ),
                               const SizedBox(width: 12),
+                              // Expanded(
+                              //   child: Text(
+                              //     'I accept the Terms of Service and Privacy Policy',
+                              //     style: TextStyle(
+                              //       color: Colors.white.withOpacity(0.8),
+                              //       fontSize: 13,
+                              //     ),
+                              //   ),
+                              // ),
                               Expanded(
-                                child: Text(
-                                  'I accept the Terms of Service and Privacy Policy',
-                                  style: TextStyle(
-                                    color: Colors.white.withOpacity(0.8),
-                                    fontSize: 13,
+                                child: RichText(
+                                  text: TextSpan(
+                                    text: 'I accept the ',
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.8),
+                                      fontSize: 14,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: 'Terms of Services',
+                                        style: const TextStyle(
+                                          color: Colors.blue,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                        recognizer: TapGestureRecognizer()
+                                          ..onTap = () {
+                                            print("Terms of Service clicked");
+                                          },
+                                      ),
+                                      TextSpan(text: ' and '),
+                                      TextSpan(
+                                        text: 'Privacy Policy',
+                                        style: const TextStyle(
+                                          color: Colors.blue, // link color
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                        recognizer: TapGestureRecognizer()
+                                          ..onTap = () {
+                                            print("Privacy Policy clicked");
+                                          },
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),

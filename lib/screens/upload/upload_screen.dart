@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
@@ -23,7 +24,12 @@ class _UploadScreenState extends State<UploadScreen> {
   final UploadController _uploadController = Get.put(UploadController());
   final ImagePicker _picker = ImagePicker();
   File? _selectedImage;
-  bool _consentAccepted = false;
+  // bool _consentAccepted = false;
+  bool _consentPermission = false;
+  bool _consentContent = false;
+  bool _consentResult = false;
+  bool _consentTerms = false;
+  bool _consentDefame = false;
 
   @override
   Widget build(BuildContext context) {
@@ -212,14 +218,14 @@ class _UploadScreenState extends State<UploadScreen> {
                     fontSize: 16,
                   ),
                 ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Choose a method below to upload',
-                  style: TextStyle(
-                    color: Colors.white38,
-                    fontSize: 13,
-                  ),
-                ),
+                // const SizedBox(height: 8),
+                // const Text(
+                //   'Choose a method below to upload',
+                //   style: TextStyle(
+                //     color: Colors.white38,
+                //     fontSize: 13,
+                //   ),
+                // ),
               ],
             ),
         ],
@@ -230,21 +236,22 @@ class _UploadScreenState extends State<UploadScreen> {
   Widget _buildUploadButtons() {
     return Row(
       children: [
-        Expanded(
-          child: GradientButton(
-            text: 'Take Photo',
-            onPressed: _pickImageFromCamera,
-            gradient: AppTheme.primaryGradient,
-            icon: Icons.camera_alt,
-            height: 60,
-          ).animate().fadeIn(delay: 600.ms, duration: 600.ms).slideY(begin: 0.2, end: 0),
-        ),
-        const SizedBox(width: 12.0),
+        // Expanded(
+        //   child: GradientButton(
+        //     text: 'Take Photo',
+        //     onPressed: _pickImageFromCamera,
+        //     gradient: AppTheme.primaryGradient,
+        //     icon: Icons.camera_alt,
+        //     height: 60,
+        //   ).animate().fadeIn(delay: 600.ms, duration: 600.ms).slideY(begin: 0.2, end: 0),
+        // ),
+        // const SizedBox(width: 12.0),
         Expanded(
           child: GradientButton(
             text: 'Gallery',
             onPressed: _pickImageFromGallery,
-            gradient: AppTheme.accentGradient,
+            // gradient: AppTheme.accentGradient,
+            gradient: AppTheme.primaryGradient,
             icon: Icons.photo_library,
             height: 60,
           ).animate().fadeIn(delay: 700.ms, duration: 600.ms).slideY(begin: 0.2, end: 0),
@@ -288,18 +295,152 @@ class _UploadScreenState extends State<UploadScreen> {
             ],
           ),
           const SizedBox(height: 16),
+          // CheckboxListTile(
+          //   value: _consentAccepted,
+          //   onChanged: (value) {
+          //     setState(() {
+          //       _consentAccepted = value ?? false;
+          //     });
+          //   },
+          //   titleAlignment: ListTileTitleAlignment.top,
+          //   activeColor: AppTheme.brandOrange,
+          //   checkColor: Colors.white,
+          //   title: const Text(
+          //     'I confirm that I have the legal right to upload this image and consent to its analysis by this app for AI detection purposes. I understand that this image will not be stored or shared and is used solely for real-time analysis. The image and results will be stored until I manually delete them.',
+          //     style: TextStyle(
+          //       color: Colors.white70,
+          //       fontSize: 13,
+          //     ),
+          //   ),
+          //   controlAffinity: ListTileControlAffinity.leading,
+          //   contentPadding: EdgeInsets.zero,
+          // ),
           CheckboxListTile(
-            value: _consentAccepted,
+            value: _consentPermission,
             onChanged: (value) {
               setState(() {
-                _consentAccepted = value ?? false;
+                _consentPermission = value ?? false;
               });
             },
             titleAlignment: ListTileTitleAlignment.top,
             activeColor: AppTheme.brandOrange,
             checkColor: Colors.white,
             title: const Text(
-              'I confirm that I have the legal right to upload this image and consent to its analysis by this app for AI detection purposes. I understand that this image will not be stored or shared and is used solely for real-time analysis. The image and results will be stored until I manually delete them.',
+              'You own or have permission to scan this photo.',
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 13,
+              ),
+            ),
+            controlAffinity: ListTileControlAffinity.leading,
+            contentPadding: EdgeInsets.zero,
+          ),
+          CheckboxListTile(
+            value: _consentContent,
+            onChanged: (value) {
+              setState(() {
+                _consentContent = value ?? false;
+              });
+            },
+            titleAlignment: ListTileTitleAlignment.top,
+            activeColor: AppTheme.brandOrange,
+            checkColor: Colors.white,
+            title: const Text(
+              'No minors or explicit content will be uploaded.',
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 13,
+              ),
+            ),
+            controlAffinity: ListTileControlAffinity.leading,
+            contentPadding: EdgeInsets.zero,
+          ),
+          CheckboxListTile(
+            value: _consentResult,
+            onChanged: (value) {
+              setState(() {
+                _consentResult = value ?? false;
+              });
+            },
+            titleAlignment: ListTileTitleAlignment.top,
+            activeColor: AppTheme.brandOrange,
+            checkColor: Colors.white,
+            title: const Text(
+              'Results are estimates, not identity verification.',
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 13,
+              ),
+            ),
+            controlAffinity: ListTileControlAffinity.leading,
+            contentPadding: EdgeInsets.zero,
+          ),
+          CheckboxListTile(
+            value: _consentTerms,
+            onChanged: (value) {
+              setState(() {
+                _consentTerms = value ?? false;
+              });
+            },
+            titleAlignment: ListTileTitleAlignment.top,
+            activeColor: AppTheme.brandOrange,
+            checkColor: Colors.white,
+            // title: Text(
+            //   'You agree to the Terms of Use & Privacy Policy.',
+            //   style: TextStyle(
+            //     color: Colors.white70,
+            //     fontSize: 13,
+            //   ),
+            // ),
+            title: RichText(
+              text: TextSpan(
+                text: 'You agree to the ',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 13,
+                ),
+                children: [
+                  TextSpan(
+                    text: 'Terms of Use',
+                    style: const TextStyle(
+                      color: Colors.blue,
+                      decoration: TextDecoration.underline,
+                    ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        print("Terms of Service clicked");
+                      },
+                  ),
+                  TextSpan(text: ' & '),
+                  TextSpan(
+                    text: 'Privacy Policy',
+                    style: const TextStyle(
+                      color: Colors.blue, // link color
+                      decoration: TextDecoration.underline,
+                    ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        print("Privacy Policy clicked");
+                      },
+                  ),
+                ],
+              ),
+            ),
+            controlAffinity: ListTileControlAffinity.leading,
+            contentPadding: EdgeInsets.zero,
+          ),
+          CheckboxListTile(
+            value: _consentDefame,
+            onChanged: (value) {
+              setState(() {
+                _consentDefame = value ?? false;
+              });
+            },
+            titleAlignment: ListTileTitleAlignment.top,
+            activeColor: AppTheme.brandOrange,
+            checkColor: Colors.white,
+            title: const Text(
+              'You will not use results to harass or defame others.',
               style: TextStyle(
                 color: Colors.white70,
                 fontSize: 13,
@@ -316,7 +457,7 @@ class _UploadScreenState extends State<UploadScreen> {
   Widget _buildAnalyzeButton() {
     return Obx(() {
       final isUploading = _uploadController.isUploading;
-      final canAnalyze = _selectedImage != null && _consentAccepted && !isUploading;
+      final canAnalyze = _selectedImage != null && (_consentPermission && _consentContent && _consentResult && _consentTerms && _consentDefame) && !isUploading;
 
       return GradientButton(
         text: isUploading ? 'Uploading...' : 'Analyze Photo',
@@ -392,20 +533,20 @@ class _UploadScreenState extends State<UploadScreen> {
     );
   }
 
-  Future<void> _pickImageFromCamera() async {
-    final XFile? image = await _picker.pickImage(
-      source: ImageSource.camera,
-      maxWidth: 1920,
-      maxHeight: 1920,
-      imageQuality: 85,
-    );
+  // Future<void> _pickImageFromCamera() async {
+  //   final XFile? image = await _picker.pickImage(
+  //     source: ImageSource.camera,
+  //     maxWidth: 1920,
+  //     maxHeight: 1920,
+  //     imageQuality: 85,
+  //   );
 
-    if (image != null) {
-      setState(() {
-        _selectedImage = File(image.path);
-      });
-    }
-  }
+  //   if (image != null) {
+  //     setState(() {
+  //       _selectedImage = File(image.path);
+  //     });
+  //   }
+  // }
 
   Future<void> _pickImageFromGallery() async {
     final XFile? image = await _picker.pickImage(
@@ -423,7 +564,7 @@ class _UploadScreenState extends State<UploadScreen> {
   }
 
   Future<void> _uploadAndAnalyze() async {
-    if (_selectedImage == null || !_consentAccepted) return;
+    if (_selectedImage == null || (!_consentPermission && !_consentContent && !_consentResult && !_consentTerms && !_consentDefame)) return;
 
     final result = await _uploadController.uploadImage(_selectedImage!);
 

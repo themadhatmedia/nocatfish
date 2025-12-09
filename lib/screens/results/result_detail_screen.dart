@@ -325,6 +325,7 @@ class _ResultDetailScreenState extends State<ResultDetailScreen> {
                             levelColor,
                             level,
                             imageURL,
+                            levelDescription,
                           ),
                         ),
                         const SizedBox(height: 30.0),
@@ -426,10 +427,12 @@ class _ResultDetailScreenState extends State<ResultDetailScreen> {
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
-                                  'Results are stored until manually deleted',
+                                  // 'Results are stored until manually deleted',
+                                  'Output is a probability rating only. CatFish Scan does not confirm authenticity or identity.',
                                   style: TextStyle(
                                     color: Colors.white.withOpacity(0.8),
-                                    fontSize: 12,
+                                    fontSize: 13,
+                                    fontStyle: FontStyle.italic,
                                   ),
                                 ),
                               ),
@@ -458,7 +461,7 @@ class _ResultDetailScreenState extends State<ResultDetailScreen> {
     );
   }
 
-  Widget _buildScoreGauge(score, levelColor, level, imageURL) {
+  Widget _buildScoreGauge(score, levelColor, level, imageURL, levelDescription) {
     return GlassContainer(
       padding: const EdgeInsets.all(32),
       width: MediaQuery.of(context).size.width,
@@ -524,7 +527,8 @@ class _ResultDetailScreenState extends State<ResultDetailScreen> {
           ).animate().fadeIn(delay: 300.ms, duration: 600.ms),
           const SizedBox(height: 12),
           Text(
-            'Significant deception detected',
+            // 'Significant deception detected',
+            '$levelDescription',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white.withOpacity(0.7),

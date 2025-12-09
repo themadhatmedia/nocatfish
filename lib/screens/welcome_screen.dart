@@ -105,7 +105,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     ).animate(onPlay: (controller) => controller.repeat()).shimmer(duration: 2000.ms, color: AppTheme.brandOrange.withOpacity(0.3)),
                     const SizedBox(height: 20.0),
                     GradientText(
-                      text: 'Welcome to\nNo Catfish AI',
+                      text: 'Welcome to\nCatfish Scan',
                       gradient: AppTheme.primaryGradient,
                       style: Theme.of(context).textTheme.displayLarge?.copyWith(
                             fontSize: 36,

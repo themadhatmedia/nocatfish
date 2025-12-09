@@ -22,7 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
-  bool _obscurePassword = true;
+  bool obscurePassword = true;
 
   @override
   void dispose() {
@@ -149,17 +149,20 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SizedBox(height: 20),
                           CustomTextField(
                             controller: _passwordController,
+                            isPassword: true,
                             label: 'Password',
                             hint: 'Enter your password',
                             prefixIcon: Icons.lock_outline,
-                            obscureText: _obscurePassword,
+                            obscureText: obscurePassword,
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                                obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
                                 color: Colors.white70,
                               ),
                               onPressed: () {
-                                setState(() => _obscurePassword = !_obscurePassword);
+                                setState(() {
+                                  obscurePassword = !obscurePassword;
+                                });
                               },
                             ),
                             validator: (value) {

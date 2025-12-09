@@ -89,7 +89,7 @@ class _SplashScreenState extends State<SplashScreen> {
               ).animate(onPlay: (controller) => controller.repeat()).shimmer(duration: 2000.ms, color: AppTheme.brandOrange.withOpacity(0.3)).scale(duration: 1500.ms, begin: const Offset(0.95, 0.95), end: const Offset(1.0, 1.0), curve: Curves.easeInOut),
               const SizedBox(height: 40),
               GradientText(
-                text: 'No Catfish',
+                text: 'Catfish Scan',
                 gradient: AppTheme.primaryGradient,
                 style: Theme.of(context).textTheme.displayLarge?.copyWith(
                       fontSize: 42,

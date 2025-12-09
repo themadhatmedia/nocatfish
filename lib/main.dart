@@ -50,7 +50,7 @@ class NoCatfishApp extends StatelessWidget {
     final themeController = Get.find<ThemeController>();
 
     return Obx(() => GetMaterialApp(
-          title: 'No Catfish AI',
+          title: 'Catfish Scan',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
