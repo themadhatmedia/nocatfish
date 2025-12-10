@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
+import 'package:nocatfish_app/screens/packages/packages_screen.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 import '../../controllers/auth_controller.dart';
@@ -197,73 +198,78 @@ class _HomeContentState extends State<HomeContent> {
                           ),
                         ],
                       ),
-                      Container(
-                        width: 55,
-                        height: 55,
-                        // decoration: BoxDecoration(
-                        //   color: Colors.white,
-                        //   borderRadius: BorderRadius.circular(16),
-                        //   boxShadow: [
-                        //     BoxShadow(
-                        //       color: AppTheme.brandOrange.withOpacity(0.3),
-                        //       blurRadius: 15,
-                        //       spreadRadius: 2,
-                        //     ),
-                        //   ],
-                        // ),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: AppTheme.primaryGradient,
-                          // gradient: LinearGradient(
-                          //   begin: Alignment.topLeft,
-                          //   end: Alignment.bottomRight,
-                          //   // colors: [
-                          //   //   Color(0xFFFFD54F), // light golden
-                          //   //   Color(0xFFF9A825), // dark golden
-                          //   // ],
-                          //   colors: [Colors.grey.shade400, Colors.grey.shade500],
+                      GestureDetector(
+                        onTap: () {
+                          Get.to(() => PackagesScreen());
+                        },
+                        child: Container(
+                          width: 55,
+                          height: 55,
+                          // decoration: BoxDecoration(
+                          //   color: Colors.white,
+                          //   borderRadius: BorderRadius.circular(16),
+                          //   boxShadow: [
+                          //     BoxShadow(
+                          //       color: AppTheme.brandOrange.withOpacity(0.3),
+                          //       blurRadius: 15,
+                          //       spreadRadius: 2,
+                          //     ),
+                          //   ],
                           // ),
-                          boxShadow: [
-                            BoxShadow(
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                              // color: Colors.black.withOpacity(0.2),
-                              color: AppTheme.brandOrange.withOpacity(0.3),
-                            ),
-                          ],
-                        ),
-                        // child: Image.asset(
-                        //   'assets/images/logo.png',
-                        //   fit: BoxFit.contain,
-                        // ),
-                        child: Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                dashboardController.dashboard!.tokensBalance.toString(),
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              // const SizedBox(height: 2),
-                              const Text(
-                                'Coins',
-                                style: TextStyle(
-                                  fontSize: 13.0,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: AppTheme.primaryGradient,
+                            // gradient: LinearGradient(
+                            //   begin: Alignment.topLeft,
+                            //   end: Alignment.bottomRight,
+                            //   // colors: [
+                            //   //   Color(0xFFFFD54F), // light golden
+                            //   //   Color(0xFFF9A825), // dark golden
+                            //   // ],
+                            //   colors: [Colors.grey.shade400, Colors.grey.shade500],
+                            // ),
+                            boxShadow: [
+                              BoxShadow(
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                                // color: Colors.black.withOpacity(0.2),
+                                color: AppTheme.brandOrange.withOpacity(0.3),
                               ),
                             ],
                           ),
-                        ),
-                      ).animate(onPlay: (controller) => controller.repeat()).shimmer(
-                            duration: 2000.ms,
-                            color: AppTheme.brandOrange.withOpacity(0.3),
+                          // child: Image.asset(
+                          //   'assets/images/logo.png',
+                          //   fit: BoxFit.contain,
+                          // ),
+                          child: Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  dashboardController.dashboard!.tokensBalance.toString(),
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                // const SizedBox(height: 2),
+                                const Text(
+                                  'Coins',
+                                  style: TextStyle(
+                                    fontSize: 13.0,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
+                        ).animate(onPlay: (controller) => controller.repeat()).shimmer(
+                              duration: 2000.ms,
+                              color: AppTheme.brandOrange.withOpacity(0.3),
+                            ),
+                      ),
                     ],
                   ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0),
                   const SizedBox(height: 40),

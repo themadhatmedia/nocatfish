@@ -320,6 +320,9 @@ class StripeService {
               merchantName: 'Catfish Scan',
               merchantCountryCode: 'US',
               currencyCode: 'USD',
+              billingAddressConfig: GooglePayBillingAddressConfig(
+                isRequired: true,
+              ),
             ),
           ),
         );
@@ -448,11 +451,18 @@ class StripeService {
 
   Future<String?> createPaymentIntent(double amount, String currency) async {
     try {
+      var user = StorageService().getUser()!;
+      print('id: ${user['id']}');
+      print('name: ${user['name']}');
+      print('email: ${user['email']}');
       final Dio dio = Dio();
       var data = {
         "amount": (amount * 100).toInt(), //cents
         "currency": currency,
         'automatic_payment_methods[enabled]': true,
+        'metadata[Customer ID]': user['id'].toString(),
+        'metadata[Customer Name]': user['name'].toString(),
+        'metadata[Customer Email]': user['email'].toString(),
       };
       var headers = {
         "Authorization": "Bearer ${StripeConfig.secretKey}",
