@@ -1,18 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../controllers/plans_controller.dart';
 import '../../models/plan_model.dart';
 import '../../utils/app_theme.dart';
 import '../../widgets/glass_container.dart';
 import '../../widgets/gradient_button.dart';
 
-class PackagesScreen extends StatelessWidget {
+class PackagesScreen extends StatefulWidget {
   const PackagesScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final controller = Get.put(PlansController());
+  State<PackagesScreen> createState() => _PackagesScreenState();
+}
 
+class _PackagesScreenState extends State<PackagesScreen> {
+  final controller = Get.put(PlansController());
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.loadPlans();
+    });
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(

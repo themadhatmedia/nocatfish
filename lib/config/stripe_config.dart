@@ -4,7 +4,7 @@ class StripeConfig {
     defaultValue: 'XX',
   );
 
-  static const String merchantDisplayName = 'No Catfish AI';
+  static const String merchantDisplayName = 'Catfish Scan';
   static const String merchantCountryCode = 'US';
   static const String currencyCode = 'usd';
   static const String secretKey = 'XX';

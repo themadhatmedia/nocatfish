@@ -124,6 +124,7 @@ class ApiService {
   }
 
   Future logout(String token) async {
+    print('logout fn');
     try {
       final url = Uri.parse('${ApiConfig.apiBaseUrl}${ApiEndpoints.logout}');
 
@@ -621,7 +622,7 @@ class ApiService {
 
       final jsonData = jsonDecode(response.body);
       print('jsonData: $jsonData');
-      print('fromJson: ${PlansListData.fromJson(jsonData)}');
+      // print('fromJson: ${PlansListData.fromJson(jsonData)}');
 
       if (response.statusCode == 200) {
         return ApiResponse<PlansListData>(
@@ -630,6 +631,7 @@ class ApiService {
           data: PlansListData.fromJson(jsonData),
         );
       } else if (response.statusCode == 401) {
+        print('call logout from plans');
         logout(token);
       } else {
         return ApiResponse<PlansListData>(
@@ -775,6 +777,7 @@ class ApiService {
   }
 
   String _handleError(dynamic error) {
+    print('error.message: ${error.message}');
     if (error is SocketException) {
       return 'No internet connection. Please check your network.';
     } else if (error is http.ClientException) {
