@@ -361,11 +361,11 @@ class _HomeContentState extends State<HomeContent> {
                   GradientButton(
                     text: 'Upload & Analyze Photo',
                     onPressed: () {
-                      // Get.to(() => const UploadScreen());
-                      var user = StorageService().getUser()!;
-                      print('id: ${user['id']}');
-                      print('name: ${user['name']}');
-                      print('email: ${user['email']}');
+                      Get.to(() => const UploadScreen());
+                      // var user = StorageService().getUser()!;
+                      // print('id: ${user['id']}');
+                      // print('name: ${user['name']}');
+                      // print('email: ${user['email']}');
                     },
                     gradient: AppTheme.primaryGradient,
                     height: 64,

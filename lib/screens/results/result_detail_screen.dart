@@ -17,6 +17,7 @@ import '../../widgets/glass_container.dart';
 import '../../widgets/gradient_button.dart';
 import '../../widgets/gradient_text.dart';
 import '../home/home_screen.dart';
+import '../upload/upload_screen.dart';
 
 class ResultDetailScreen extends StatefulWidget {
   final int scanResultId;
@@ -443,7 +444,8 @@ class _ResultDetailScreenState extends State<ResultDetailScreen> {
                         GradientButton(
                           text: 'Analyze Another Photo',
                           onPressed: () {
-                            Get.offAll(() => const HomeScreen());
+                            // Get.offAll(() => const HomeScreen());
+                            Get.to(() => const UploadScreen());
                           },
                           gradient: AppTheme.primaryGradient,
                           icon: Icons.camera_alt_outlined,

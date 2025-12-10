@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../controllers/auth_controller.dart';
 import '../../controllers/dashboard_controller.dart';
@@ -269,35 +270,51 @@ class ProfileScreen extends StatelessWidget {
                   blur: 15,
                   child: Column(
                     children: [
-                      _buildSettingItem(
-                        icon: Icons.privacy_tip_outlined,
-                        title: 'Privacy Policy',
-                        trailing: const Icon(
-                          Icons.arrow_forward_ios,
-                          color: Colors.white54,
-                          size: 16,
+                      GestureDetector(
+                        onTap: () async {
+                          final url = Uri.parse(AppTheme.privacyPolicy);
+                          if (await canLaunchUrl(url)) {
+                            await launchUrl(url, mode: LaunchMode.externalApplication);
+                          }
+                        },
+                        child: _buildSettingItem(
+                          icon: Icons.privacy_tip_outlined,
+                          title: 'Privacy Policy',
+                          trailing: const Icon(
+                            Icons.arrow_forward_ios,
+                            color: Colors.white54,
+                            size: 16,
+                          ),
                         ),
                       ),
                       const Divider(color: Colors.white24, height: 1),
-                      _buildSettingItem(
-                        icon: Icons.description_outlined,
-                        title: 'Terms of Service',
-                        trailing: const Icon(
-                          Icons.arrow_forward_ios,
-                          color: Colors.white54,
-                          size: 16,
+                      GestureDetector(
+                        onTap: () async {
+                          final url = Uri.parse(AppTheme.terms);
+                          if (await canLaunchUrl(url)) {
+                            await launchUrl(url, mode: LaunchMode.externalApplication);
+                          }
+                        },
+                        child: _buildSettingItem(
+                          icon: Icons.description_outlined,
+                          title: 'Terms of Service',
+                          trailing: const Icon(
+                            Icons.arrow_forward_ios,
+                            color: Colors.white54,
+                            size: 16,
+                          ),
                         ),
                       ),
-                      const Divider(color: Colors.white24, height: 1),
-                      _buildSettingItem(
-                        icon: Icons.help_outline,
-                        title: 'Help & Support',
-                        trailing: const Icon(
-                          Icons.arrow_forward_ios,
-                          color: Colors.white54,
-                          size: 16,
-                        ),
-                      ),
+                      // const Divider(color: Colors.white24, height: 1),
+                      // _buildSettingItem(
+                      //   icon: Icons.help_outline,
+                      //   title: 'Help & Support',
+                      //   trailing: const Icon(
+                      //     Icons.arrow_forward_ios,
+                      //     color: Colors.white54,
+                      //     size: 16,
+                      //   ),
+                      // ),
                       const Divider(color: Colors.white24, height: 1),
                       _buildSettingItem(
                         icon: Icons.info_outline,
