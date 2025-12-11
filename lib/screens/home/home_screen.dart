@@ -265,10 +265,12 @@ class _HomeContentState extends State<HomeContent> {
                               ],
                             ),
                           ),
-                        ).animate(onPlay: (controller) => controller.repeat()).shimmer(
-                              duration: 2000.ms,
-                              color: AppTheme.brandOrange.withOpacity(0.3),
-                            ),
+                          //   ).animate(onPlay: (controller) => controller.repeat()).shimmer(
+                          //         duration: 2000.ms,
+                          //         color: AppTheme.brandOrange.withOpacity(0.3),
+                          //       ),
+                          // ),
+                        ),
                       ),
                     ],
                   ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0),

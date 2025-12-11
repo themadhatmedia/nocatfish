@@ -94,6 +94,8 @@ class PlansController extends GetxController {
         currency: 'usd',
       );
 
+      print('paymentSuccess: $paymentSuccess');
+
       if (!paymentSuccess) {
         debugPrint('payment here 3');
         _error.value = 'Payment was not completed';
