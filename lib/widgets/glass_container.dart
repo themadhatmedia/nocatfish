@@ -51,7 +51,7 @@ class GlassContainer extends StatelessWidget {
               image: DecorationImage(
                 image: NetworkImage(imageURL!),
                 opacity: 0.4,
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
               ),
             )
           : BoxDecoration(

@@ -168,7 +168,7 @@ class _UploadScreenState extends State<UploadScreen> {
                     _selectedImage!,
                     height: 300,
                     width: double.infinity,
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                   ),
                 ),
                 const SizedBox(height: 16),
