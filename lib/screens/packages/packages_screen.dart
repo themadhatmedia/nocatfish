@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nocatfish_app/controllers/dashboard_controller.dart';
 
 import '../../controllers/plans_controller.dart';
 import '../../models/plan_model.dart';
@@ -16,6 +17,7 @@ class PackagesScreen extends StatefulWidget {
 
 class _PackagesScreenState extends State<PackagesScreen> {
   final controller = Get.put(PlansController());
+  final dbcontroller = Get.put(DashboardController());
 
   @override
   void initState() {
@@ -126,6 +128,7 @@ class _PackagesScreenState extends State<PackagesScreen> {
                 (plan) => _buildPlanCard(
                   plan,
                   controller,
+                  dbcontroller,
                 ),
               ),
             ],
@@ -203,7 +206,7 @@ class _PackagesScreenState extends State<PackagesScreen> {
     );
   }
 
-  Widget _buildPlanCard(PlanModel plan, PlansController controller) {
+  Widget _buildPlanCard(PlanModel plan, PlansController controller, DashboardController dbcontroller) {
     final isActive = controller.isPlanActive(plan.id);
 
     return Container(
@@ -307,7 +310,7 @@ class _PackagesScreenState extends State<PackagesScreen> {
 
               return GradientButton(
                 text: plan.price > 0 ? 'Buy Plan' : 'Select Plan',
-                onPressed: controller.isPurchasing ? null : () => _handlePurchase(plan, controller),
+                onPressed: controller.isPurchasing ? null : () => _handlePurchase(plan, controller, dbcontroller),
                 gradient: AppTheme.primaryGradient,
                 isLoading: controller.isPurchasing,
               );
@@ -321,6 +324,7 @@ class _PackagesScreenState extends State<PackagesScreen> {
   Future<void> _handlePurchase(
     PlanModel plan,
     PlansController controller,
+    DashboardController dbcontroller,
   ) async {
     final confirmed = await Get.dialog<bool>(
       AlertDialog(
@@ -375,6 +379,8 @@ class _PackagesScreenState extends State<PackagesScreen> {
         );
         Future.delayed(Duration(seconds: 2));
         controller.loadPlans();
+        Future.delayed(Duration(seconds: 2));
+        dbcontroller.loadDashboard();
       } else {
         Get.snackbar(
           'Error',
