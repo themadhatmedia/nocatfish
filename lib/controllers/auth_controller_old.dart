@@ -1,7 +1,8 @@
 import 'package:get/get.dart';
-import '../services/storage_service.dart';
-import '../services/api_service.dart';
+
 import '../models/api_response.dart';
+import '../services/api_service.dart';
+import '../services/storage_service.dart';
 
 class AuthController extends GetxController {
   final StorageService _storage = StorageService();
@@ -63,7 +64,9 @@ class AuthController extends GetxController {
         _user.value = userData;
         await _storage.saveUser(userData);
       }
-    } catch (e) {}
+    } catch (e) {
+      print('catch block');
+    }
   }
 
   Future<ApiResponse<AuthData>> login(String email, String password) async {
@@ -114,115 +117,6 @@ class AuthController extends GetxController {
         email: email,
         password: password,
         passwordConfirmation: password,
-      );
-
-      if (response.success && response.data != null) {
-        final authData = response.data!;
-        _token.value = authData.token;
-        _user.value = authData.user.toJson();
-        _isAuthenticated.value = true;
-
-        await _storage.saveToken(authData.token);
-        await _storage.saveUser(authData.user.toJson());
-      } else {
-        _error.value = response.errorMessage;
-      }
-
-      _isLoading.value = false;
-      return response;
-    } catch (e) {
-      _isLoading.value = false;
-      _error.value = 'An unexpected error occurred';
-      return ApiResponse<AuthData>(
-        success: false,
-        message: 'An unexpected error occurred',
-      );
-    }
-  }
-
-  Future<ApiResponse<void>> sendOtp({
-    required String phoneNumber,
-    required String countryCode,
-  }) async {
-    _isLoading.value = true;
-    _error.value = null;
-
-    try {
-      final response = await _apiService.sendOtp(
-        phoneNumber: phoneNumber,
-        countryCode: countryCode,
-      );
-
-      if (!response.success) {
-        _error.value = response.errorMessage;
-      }
-
-      _isLoading.value = false;
-      return response;
-    } catch (e) {
-      _isLoading.value = false;
-      _error.value = 'An unexpected error occurred';
-      return ApiResponse<void>(
-        success: false,
-        message: 'An unexpected error occurred',
-      );
-    }
-  }
-
-  Future<ApiResponse<AuthData>> verifyOtpAndRegister({
-    required String name,
-    required String phoneNumber,
-    required String countryCode,
-    required String otp,
-  }) async {
-    _isLoading.value = true;
-    _error.value = null;
-
-    try {
-      final response = await _apiService.verifyOtpAndRegister(
-        name: name,
-        phoneNumber: phoneNumber,
-        countryCode: countryCode,
-        otp: otp,
-      );
-
-      if (response.success && response.data != null) {
-        final authData = response.data!;
-        _token.value = authData.token;
-        _user.value = authData.user.toJson();
-        _isAuthenticated.value = true;
-
-        await _storage.saveToken(authData.token);
-        await _storage.saveUser(authData.user.toJson());
-      } else {
-        _error.value = response.errorMessage;
-      }
-
-      _isLoading.value = false;
-      return response;
-    } catch (e) {
-      _isLoading.value = false;
-      _error.value = 'An unexpected error occurred';
-      return ApiResponse<AuthData>(
-        success: false,
-        message: 'An unexpected error occurred',
-      );
-    }
-  }
-
-  Future<ApiResponse<AuthData>> verifyOtpAndLogin({
-    required String phoneNumber,
-    required String countryCode,
-    required String otp,
-  }) async {
-    _isLoading.value = true;
-    _error.value = null;
-
-    try {
-      final response = await _apiService.verifyOtpAndLogin(
-        phoneNumber: phoneNumber,
-        countryCode: countryCode,
-        otp: otp,
       );
 
       if (response.success && response.data != null) {

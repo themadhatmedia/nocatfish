@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
+import 'package:flutter_intl_phone_field/flutter_intl_phone_field.dart';
 import '../../utils/app_theme.dart';
 import '../../widgets/glass_container.dart';
 import '../../widgets/gradient_button.dart';
 import '../../widgets/gradient_text.dart';
-import '../../widgets/custom_text_field.dart';
 import '../../controllers/auth_controller.dart';
-import '../home/home_screen.dart';
 import 'register_screen.dart';
+import 'otp_verification_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,15 +20,14 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _phoneController = TextEditingController();
+  String _countryCode = '+1';
+  String _fullPhoneNumber = '';
   bool _isLoading = false;
-  bool obscurePassword = true;
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -37,15 +37,19 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = true);
 
     final authController = Get.find<AuthController>();
-    final response = await authController.login(
-      _emailController.text,
-      _passwordController.text,
+    final response = await authController.sendOtp(
+      phoneNumber: _fullPhoneNumber,
+      countryCode: _countryCode,
     );
 
     setState(() => _isLoading = false);
 
     if (response.success && mounted) {
-      Get.offAll(() => const HomeScreen());
+      Get.to(() => OtpVerificationScreen(
+            phoneNumber: _fullPhoneNumber,
+            countryCode: _countryCode,
+            isRegistration: false,
+          ));
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -74,26 +78,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          Positioned(
-            top: -100,
-            right: -100,
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    AppTheme.brandOrange.withOpacity(0.3),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ).animate(onPlay: (controller) => controller.repeat()).shimmer(
-                  duration: 3000.ms,
-                  color: Colors.white.withOpacity(0.1),
-                ),
-          ),
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
@@ -116,117 +100,135 @@ class _LoginScreenState extends State<LoginScreen> {
                             fontWeight: FontWeight.bold,
                             height: 1.2,
                           ),
-                    ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0),
-                    const SizedBox(height: 12),
+                    ).animate().fadeIn(delay: 100.ms, duration: 600.ms).slideY(begin: 0.2, end: 0),
+                    const SizedBox(height: 16),
                     Text(
-                      'Sign in to continue your verification journey',
+                      'Login to continue protecting yourself',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             color: Colors.white70,
                           ),
                     ).animate().fadeIn(delay: 200.ms, duration: 600.ms).slideY(begin: 0.2, end: 0),
                     const SizedBox(height: 60),
                     GlassContainer(
-                      padding: const EdgeInsets.all(24),
+                      padding: const EdgeInsets.all(15.0),
                       blur: 15,
                       child: Column(
                         children: [
-                          CustomTextField(
-                            controller: _emailController,
-                            label: 'Email Address',
-                            hint: 'Enter your email',
-                            prefixIcon: Icons.email_outlined,
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (value) {
-                              if (value?.isEmpty ?? true) {
-                                return 'Please enter your email';
-                              }
-                              if (!value!.contains('@')) {
-                                return 'Please enter a valid email';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 20),
-                          CustomTextField(
-                            controller: _passwordController,
-                            isPassword: true,
-                            label: 'Password',
-                            hint: 'Enter your password',
-                            prefixIcon: Icons.lock_outline,
-                            obscureText: obscurePassword,
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                                color: Colors.white70,
+                          IntlPhoneField(
+                            controller: _phoneController,
+                            // disableLengthCheck: true,
+                            // autovalidateMode: AutovalidateMode.onUserInteraction,
+                            // maxLengthEnforcement: MaxLengthEnforcement.none,
+                            decoration: InputDecoration(
+                              labelText: 'Phone Number',
+                              labelStyle: const TextStyle(
+                                color: Colors.white60,
+                                fontSize: 14,
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  obscurePassword = !obscurePassword;
-                                });
-                              },
-                            ),
-                            validator: (value) {
-                              if (value?.isEmpty ?? true) {
-                                return 'Please enter your password';
-                              }
-                              if (value!.length < 6) {
-                                return 'Password must be at least 6 characters';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 12),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: () {},
-                              child: GradientText(
-                                text: 'Forgot Password?',
-                                gradient: AppTheme.primaryGradient,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
+                              filled: true,
+                              fillColor: Colors.white.withOpacity(0.05),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.2),
                                 ),
                               ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.2),
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                  color: AppTheme.brandOrange,
+                                  width: 2,
+                                ),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                  color: AppTheme.darkOrange,
+                                ),
+                              ),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                  color: AppTheme.darkOrange,
+                                  width: 2,
+                                ),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 18,
+                              ),
                             ),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
+                            dropdownTextStyle: const TextStyle(
+                              color: Colors.white,
+                            ),
+                            // dropdownDecoration: BoxDecoration(
+                            //   color: AppTheme.cardColor,
+                            //   borderRadius: BorderRadius.circular(12),
+                            // ),
+                            initialCountryCode: 'US',
+                            onChanged: (phone) {
+                              setState(() {
+                                _countryCode = phone.countryCode;
+                                _fullPhoneNumber = phone.number;
+                              });
+                            },
+                            validator: (phone) {
+                              if (phone == null || phone.number.isEmpty) {
+                                return 'Please enter your phone number';
+                              }
+                              if (!phone.isValidNumber()) {
+                                return 'Please enter a valid phone number';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 32),
+                          GradientButton(
+                            text: 'Send OTP',
+                            onPressed: _handleLogin,
+                            gradient: AppTheme.primaryGradient,
+                            isLoading: _isLoading,
+                            icon: Icons.message_outlined,
+                          ),
+                          const SizedBox(height: 24),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                "Don't have an account? ",
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  Get.off(() => const RegisterScreen());
+                                },
+                                child: Text(
+                                  'Sign Up',
+                                  style: TextStyle(
+                                    color: AppTheme.brandOrange,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ).animate().fadeIn(delay: 400.ms, duration: 600.ms).slideY(begin: 0.2, end: 0),
-                    const SizedBox(height: 40),
-                    GradientButton(
-                      text: 'Sign In',
-                      onPressed: _handleLogin,
-                      gradient: AppTheme.primaryGradient,
-                      isLoading: _isLoading,
-                      icon: Icons.login,
-                    ).animate().fadeIn(delay: 600.ms, duration: 600.ms).slideY(begin: 0.2, end: 0),
-                    const SizedBox(height: 24),
-                    Center(
-                      child: TextButton(
-                        onPressed: () {
-                          Get.off(() => const RegisterScreen());
-                        },
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              "Don't have an account? ",
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Colors.white70,
-                                  ),
-                            ),
-                            GradientText(
-                              text: 'Sign Up',
-                              gradient: AppTheme.primaryGradient,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ).animate().fadeIn(delay: 700.ms, duration: 600.ms),
+                    ).animate().fadeIn(delay: 300.ms, duration: 600.ms).slideY(begin: 0.2, end: 0),
                   ],
                 ),
               ),

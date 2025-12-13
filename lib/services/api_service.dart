@@ -776,6 +776,169 @@ class ApiService {
     }
   }
 
+  Future<ApiResponse<void>> sendOtp({
+    required String phoneNumber,
+    required String countryCode,
+  }) async {
+    try {
+      final url = Uri.parse('${ApiConfig.apiBaseUrl}/auth/send-otp');
+      final body = {
+        'phone_number': phoneNumber,
+        'country_code': countryCode,
+      };
+
+      print('\n=== API REQUEST: SEND OTP ===');
+      print('URL: $url');
+      print('Method: POST');
+      print('Body: ${jsonEncode(body)}');
+
+      final response = await http
+          .post(
+            url,
+            headers: ApiConfig.getHeaders(),
+            body: jsonEncode(body),
+          )
+          .timeout(ApiConfig.connectTimeout);
+
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+      print('=== END REQUEST ===\n');
+
+      final jsonData = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return ApiResponse<void>(
+          success: true,
+          message: jsonData['message'] ?? 'OTP sent successfully',
+        );
+      } else {
+        return ApiResponse<void>(
+          success: false,
+          message: jsonData['message'] ?? 'Failed to send OTP',
+          errors: jsonData['errors'],
+        );
+      }
+    } catch (e) {
+      print('❌ Send OTP error: $e');
+      return ApiResponse<void>(
+        success: false,
+        message: _handleError(e),
+      );
+    }
+  }
+
+  Future<ApiResponse<AuthData>> verifyOtpAndRegister({
+    required String name,
+    required String phoneNumber,
+    required String countryCode,
+    required String otp,
+  }) async {
+    try {
+      final url = Uri.parse('${ApiConfig.apiBaseUrl}/auth/verify-otp-register');
+      final body = {
+        'name': name,
+        'phone_number': phoneNumber,
+        'country_code': countryCode,
+        'otp': otp,
+        'privacy_policy_accepted': true,
+        'terms_accepted': true,
+      };
+
+      print('\n=== API REQUEST: VERIFY OTP & REGISTER ===');
+      print('URL: $url');
+      print('Method: POST');
+      print('Body: ${jsonEncode(body)}');
+
+      final response = await http
+          .post(
+            url,
+            headers: ApiConfig.getHeaders(),
+            body: jsonEncode(body),
+          )
+          .timeout(ApiConfig.connectTimeout);
+
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+      print('=== END REQUEST ===\n');
+
+      final jsonData = jsonDecode(response.body);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return ApiResponse<AuthData>(
+          success: true,
+          message: jsonData['message'] ?? 'Registration successful',
+          data: AuthData.fromJson(jsonData['data']),
+        );
+      } else {
+        return ApiResponse<AuthData>(
+          success: false,
+          message: jsonData['message'] ?? 'Failed to verify OTP',
+          errors: jsonData['errors'],
+        );
+      }
+    } catch (e) {
+      print('❌ Verify OTP & Register error: $e');
+      return ApiResponse<AuthData>(
+        success: false,
+        message: _handleError(e),
+      );
+    }
+  }
+
+  Future<ApiResponse<AuthData>> verifyOtpAndLogin({
+    required String phoneNumber,
+    required String countryCode,
+    required String otp,
+  }) async {
+    try {
+      final url = Uri.parse('${ApiConfig.apiBaseUrl}/auth/verify-otp-login');
+      final body = {
+        'phone_number': phoneNumber,
+        'country_code': countryCode,
+        'otp': otp,
+      };
+
+      print('\n=== API REQUEST: VERIFY OTP & LOGIN ===');
+      print('URL: $url');
+      print('Method: POST');
+      print('Body: ${jsonEncode(body)}');
+
+      final response = await http
+          .post(
+            url,
+            headers: ApiConfig.getHeaders(),
+            body: jsonEncode(body),
+          )
+          .timeout(ApiConfig.connectTimeout);
+
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+      print('=== END REQUEST ===\n');
+
+      final jsonData = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return ApiResponse<AuthData>(
+          success: true,
+          message: jsonData['message'] ?? 'Login successful',
+          data: AuthData.fromJson(jsonData['data']),
+        );
+      } else {
+        return ApiResponse<AuthData>(
+          success: false,
+          message: jsonData['message'] ?? 'Failed to verify OTP',
+          errors: jsonData['errors'],
+        );
+      }
+    } catch (e) {
+      print('❌ Verify OTP & Login error: $e');
+      return ApiResponse<AuthData>(
+        success: false,
+        message: _handleError(e),
+      );
+    }
+  }
+
   String _handleError(dynamic error) {
     print('error.message: ${error.message}');
     if (error is SocketException) {

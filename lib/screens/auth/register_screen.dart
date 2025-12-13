@@ -2,15 +2,16 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
+import 'package:flutter_intl_phone_field/flutter_intl_phone_field.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../../controllers/auth_controller.dart';
 import '../../utils/app_theme.dart';
-import '../../widgets/custom_text_field.dart';
 import '../../widgets/glass_container.dart';
 import '../../widgets/gradient_button.dart';
 import '../../widgets/gradient_text.dart';
+import '../../widgets/custom_text_field.dart';
+import '../../controllers/auth_controller.dart';
 import 'login_screen.dart';
+import 'otp_verification_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -22,20 +23,16 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+  final _phoneController = TextEditingController();
+  String _countryCode = '+1';
+  String _fullPhoneNumber = '';
   bool _isLoading = false;
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
   bool _acceptedTerms = false;
 
   @override
   void dispose() {
     _nameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -52,23 +49,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
+    // Get.to(
+    //   () => OtpVerificationScreen(
+    //     phoneNumber: _fullPhoneNumber,
+    //     countryCode: _countryCode,
+    //     name: _nameController.text,
+    //     isRegistration: true,
+    //   ),
+    // );
+
     setState(() => _isLoading = true);
 
     final authController = Get.find<AuthController>();
-    final response = await authController.register(
-      _nameController.text,
-      _emailController.text,
-      _passwordController.text,
+    final response = await authController.sendOtp(
+      phoneNumber: _fullPhoneNumber,
+      countryCode: _countryCode,
     );
 
     setState(() => _isLoading = false);
 
     if (response.success && mounted) {
-      // Get.offAll(() => const HomeScreen());
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Registration successful. Please check your email to verify your account.'),
-          backgroundColor: AppTheme.darkOrange,
+      Get.to(
+        () => OtpVerificationScreen(
+          phoneNumber: _fullPhoneNumber,
+          countryCode: _countryCode,
+          name: _nameController.text,
+          isRegistration: true,
         ),
       );
     } else if (mounted) {
@@ -99,26 +105,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ),
           ),
-          Positioned(
-            top: -100,
-            left: -100,
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    AppTheme.darkOrange.withOpacity(0.3),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ).animate(onPlay: (controller) => controller.repeat()).shimmer(
-                  duration: 3000.ms,
-                  color: Colors.white.withOpacity(0.1),
-                ),
-          ),
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
@@ -141,133 +127,157 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             fontWeight: FontWeight.bold,
                             height: 1.2,
                           ),
-                    ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0),
-                    const SizedBox(height: 12),
+                    ).animate().fadeIn(delay: 100.ms, duration: 600.ms).slideY(begin: 0.2, end: 0),
+                    const SizedBox(height: 16),
                     Text(
-                      'Start protecting yourself from catfishing today',
+                      'Sign up to start detecting catfish photos',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             color: Colors.white70,
                           ),
                     ).animate().fadeIn(delay: 200.ms, duration: 600.ms).slideY(begin: 0.2, end: 0),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 50),
                     GlassContainer(
-                      padding: const EdgeInsets.all(24),
+                      padding: const EdgeInsets.all(15.0),
                       blur: 15,
                       child: Column(
                         children: [
                           CustomTextField(
                             controller: _nameController,
                             label: 'Full Name',
-                            hint: 'Enter your full name',
                             prefixIcon: Icons.person_outline,
                             validator: (value) {
-                              if (value?.isEmpty ?? true) {
+                              if (value == null || value.isEmpty) {
                                 return 'Please enter your name';
                               }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 20),
-                          CustomTextField(
-                            controller: _emailController,
-                            label: 'Email Address',
-                            hint: 'Enter your email',
-                            prefixIcon: Icons.email_outlined,
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (value) {
-                              if (value?.isEmpty ?? true) {
-                                return 'Please enter your email';
-                              }
-                              if (!value!.contains('@')) {
-                                return 'Please enter a valid email';
+                              if (value.length < 2) {
+                                return 'Name must be at least 2 characters';
                               }
                               return null;
                             },
                           ),
                           const SizedBox(height: 20),
-                          CustomTextField(
-                            controller: _passwordController,
-                            isPassword: true,
-                            label: 'Password',
-                            hint: 'Create a password',
-                            prefixIcon: Icons.lock_outline,
-                            obscureText: _obscurePassword,
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                                color: Colors.white70,
+                          IntlPhoneField(
+                            controller: _phoneController,
+                            // disableLengthCheck: true,
+                            decoration: InputDecoration(
+                              labelText: 'Phone Number',
+                              labelStyle: const TextStyle(
+                                color: Colors.white60,
+                                fontSize: 14,
                               ),
-                              onPressed: () {
-                                setState(() => _obscurePassword = !_obscurePassword);
-                              },
-                            ),
-                            validator: (value) {
-                              if (value?.isEmpty ?? true) {
-                                return 'Please enter a password';
-                              }
-                              if (value!.length < 8) {
-                                return 'Password must be at least 8 characters';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 20),
-                          CustomTextField(
-                            controller: _confirmPasswordController,
-                            isPassword: true,
-                            label: 'Confirm Password',
-                            hint: 'Re-enter your password',
-                            prefixIcon: Icons.lock_outline,
-                            obscureText: _obscureConfirmPassword,
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscureConfirmPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                                color: Colors.white70,
+                              filled: true,
+                              fillColor: Colors.white.withOpacity(0.05),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.2),
+                                ),
                               ),
-                              onPressed: () {
-                                setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
-                              },
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.2),
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                  color: AppTheme.brandOrange,
+                                  width: 2,
+                                ),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                  color: AppTheme.darkOrange,
+                                ),
+                              ),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                  color: AppTheme.darkOrange,
+                                  width: 2,
+                                ),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 18,
+                              ),
                             ),
-                            validator: (value) {
-                              if (value?.isEmpty ?? true) {
-                                return 'Please confirm your password';
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
+                            dropdownTextStyle: const TextStyle(
+                              color: Colors.white,
+                            ),
+                            // dropdownDecoration: BoxDecoration(
+                            //   color: AppTheme.cardColor,
+                            //   borderRadius: BorderRadius.circular(12),
+                            // ),
+                            initialCountryCode: 'US',
+                            onChanged: (phone) {
+                              setState(() {
+                                _countryCode = phone.countryCode;
+                                _fullPhoneNumber = phone.number;
+                              });
+                            },
+                            validator: (phone) {
+                              if (phone == null || phone.number.isEmpty) {
+                                return 'Please enter your phone number';
                               }
-                              if (value != _passwordController.text) {
-                                return 'Passwords do not match';
+                              if (!phone.isValidNumber()) {
+                                return 'Please enter a valid phone number';
                               }
                               return null;
                             },
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 10.0),
                           Row(
                             children: [
-                              SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: Checkbox(
-                                  value: _acceptedTerms,
-                                  onChanged: (value) {
-                                    setState(() => _acceptedTerms = value ?? false);
-                                  },
-                                  fillColor: MaterialStateProperty.resolveWith((states) {
+                              Checkbox(
+                                value: _acceptedTerms,
+                                onChanged: (value) {
+                                  setState(() => _acceptedTerms = value ?? false);
+                                },
+                                fillColor: MaterialStateProperty.resolveWith(
+                                  (states) {
                                     if (states.contains(MaterialState.selected)) {
                                       return AppTheme.brandOrange;
                                     }
-                                    return Colors.transparent;
-                                  }),
-                                  side: BorderSide(
-                                    color: Colors.white.withOpacity(0.3),
-                                    width: 1.5,
-                                  ),
+                                    return Colors.white.withOpacity(0.2);
+                                  },
+                                ),
+                                checkColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4),
                                 ),
                               ),
-                              const SizedBox(width: 12),
                               // Expanded(
-                              //   child: Text(
-                              //     'I accept the Terms of Service and Privacy Policy',
-                              //     style: TextStyle(
-                              //       color: Colors.white.withOpacity(0.8),
-                              //       fontSize: 13,
+                              //   child: Text.rich(
+                              //     TextSpan(
+                              //       text: 'I accept the ',
+                              //       style: const TextStyle(
+                              //         color: Colors.white70,
+                              //         fontSize: 13,
+                              //       ),
+                              //       children: [
+                              //         TextSpan(
+                              //           text: 'Terms of Service',
+                              //           style: TextStyle(
+                              //             color: AppTheme.brandOrange,
+                              //             fontWeight: FontWeight.w600,
+                              //           ),
+                              //         ),
+                              //         const TextSpan(text: ' and '),
+                              //         TextSpan(
+                              //           text: 'Privacy Policy',
+                              //           style: TextStyle(
+                              //             color: AppTheme.brandOrange,
+                              //             fontWeight: FontWeight.w600,
+                              //           ),
+                              //         ),
+                              //       ],
                               //     ),
                               //   ),
                               // ),
@@ -317,44 +327,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                    ).animate().fadeIn(delay: 400.ms, duration: 600.ms).slideY(begin: 0.2, end: 0),
-                    const SizedBox(height: 40),
-                    GradientButton(
-                      text: 'Create Account',
-                      onPressed: _handleRegister,
-                      gradient: AppTheme.primaryGradient,
-                      isLoading: _isLoading,
-                      icon: Icons.person_add,
-                    ).animate().fadeIn(delay: 600.ms, duration: 600.ms).slideY(begin: 0.2, end: 0),
-                    const SizedBox(height: 24),
-                    Center(
-                      child: TextButton(
-                        onPressed: () {
-                          Get.off(() => const LoginScreen());
-                        },
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'Already have an account? ',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Colors.white70,
-                                  ),
-                            ),
-                            GradientText(
-                              text: 'Sign In',
-                              gradient: AppTheme.primaryGradient,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          const SizedBox(height: 32),
+                          GradientButton(
+                            text: 'Send OTP',
+                            onPressed: _handleRegister,
+                            gradient: AppTheme.primaryGradient,
+                            isLoading: _isLoading,
+                            icon: Icons.message_outlined,
+                          ),
+                          const SizedBox(height: 24),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                'Already have an account? ',
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  Get.off(() => const LoginScreen());
+                                },
+                                child: Text(
+                                  'Login',
+                                  style: TextStyle(
+                                    color: AppTheme.brandOrange,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.w600,
                                   ),
-                            ),
-                          ],
-                        ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ).animate().fadeIn(delay: 700.ms, duration: 600.ms),
-                    const SizedBox(height: 20),
+                    ).animate().fadeIn(delay: 300.ms, duration: 600.ms).slideY(begin: 0.2, end: 0),
                   ],
                 ),
               ),
