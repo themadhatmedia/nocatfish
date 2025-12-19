@@ -11,6 +11,7 @@ import '../../utils/app_theme.dart';
 import '../../widgets/glass_container.dart';
 import '../../widgets/gradient_button.dart';
 import '../../widgets/gradient_text.dart';
+import '../../widgets/low_scans_popup.dart';
 import '../profile/profile_screen.dart';
 import '../results/result_detail_screen.dart';
 import '../results/results_screen.dart';
@@ -120,6 +121,7 @@ class HomeContent extends StatefulWidget {
 class _HomeContentState extends State<HomeContent> {
   final dashboardController = Get.find<DashboardController>();
   final authController = Get.find<AuthController>();
+  bool _hasShownLowScansPopup = false;
 
   @override
   void initState() {
@@ -128,6 +130,17 @@ class _HomeContentState extends State<HomeContent> {
       dashboardController.loadDashboard();
     });
     super.initState();
+  }
+
+  void _checkAndShowLowScansPopup(int? remainingScans) {
+    if (remainingScans != null && remainingScans < 5 && !_hasShownLowScansPopup && mounted) {
+      _hasShownLowScansPopup = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          LowScansPopup.show(context, remainingScans);
+        }
+      });
+    }
   }
 
   @override
@@ -167,6 +180,7 @@ class _HomeContentState extends State<HomeContent> {
 
               final userName = authController.user?['name'] ?? 'User';
               final stats = dashboardController.statistics;
+              _checkAndShowLowScansPopup(int.parse(dashboardController.dashboard!.tokensBalance.toString()));
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -448,22 +462,22 @@ class _HomeContentState extends State<HomeContent> {
                   const SizedBox(height: 20),
                   _buildHowItWorksStep(
                     1,
-                    'Upload Photo',
-                    'Take or choose a photo to analyze',
+                    'Save Screenshot',
+                    'Take Screenshot of Dating Profile Photo',
                     Icons.cloud_upload_outlined,
                   ).animate().fadeIn(delay: 700.ms, duration: 600.ms).slideX(begin: -0.2, end: 0),
                   const SizedBox(height: 16),
                   _buildHowItWorksStep(
                     2,
-                    'AI Analysis',
-                    'Our AI detects manipulations and edits',
+                    'Upload Screenshot',
+                    'Select the Photo from the Gallery to Analyze',
                     Icons.psychology_outlined,
                   ).animate().fadeIn(delay: 800.ms, duration: 600.ms).slideX(begin: -0.2, end: 0),
                   const SizedBox(height: 16),
                   _buildHowItWorksStep(
                     3,
                     'Get Results',
-                    'View detailed analysis and score',
+                    'View Detailed Analysis and Score',
                     Icons.verified_outlined,
                   ).animate().fadeIn(delay: 900.ms, duration: 600.ms).slideX(begin: -0.2, end: 0),
                   const SizedBox(height: 40),
@@ -503,13 +517,13 @@ class _HomeContentState extends State<HomeContent> {
 
   Widget _buildHowItWorksStep(int step, String title, String description, IconData icon) {
     return GlassContainer(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(12.0),
       blur: 10,
       child: Row(
         children: [
           Container(
-            width: 50,
-            height: 50,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
               gradient: AppTheme.primaryGradient,
               borderRadius: BorderRadius.circular(12),
@@ -518,11 +532,11 @@ class _HomeContentState extends State<HomeContent> {
               child: Icon(
                 icon,
                 color: Colors.white,
-                size: 24,
+                size: 25,
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -545,12 +559,15 @@ class _HomeContentState extends State<HomeContent> {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width / 2.2,
+                      child: Text(
+                        title,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],

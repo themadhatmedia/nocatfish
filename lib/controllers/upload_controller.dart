@@ -1,13 +1,13 @@
 import 'dart:io';
-
 import 'package:get/get.dart';
-
-import '../models/api_response.dart';
 import '../services/api_service.dart';
+import '../services/analytics_service.dart';
+import '../models/api_response.dart';
 import 'auth_controller.dart';
 
 class UploadController extends GetxController {
   final ApiService _apiService = ApiService();
+  late final AnalyticsService _analytics;
 
   final Rx<UploadLimitsData?> _limits = Rx<UploadLimitsData?>(null);
   final RxBool _isUploading = false.obs;
@@ -27,6 +27,7 @@ class UploadController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _analytics = Get.find<AnalyticsService>();
     loadLimits();
   }
 
@@ -42,6 +43,11 @@ class UploadController extends GetxController {
 
       if (response.success && response.data != null) {
         _limits.value = response.data;
+
+        await _analytics.logScansRefreshed(
+          remainingScans: response.data!.remainingUploads,
+          maxScans: response.data!.maxDailyUploads,
+        );
       } else {
         _error.value = response.errorMessage;
       }
@@ -64,6 +70,14 @@ class UploadController extends GetxController {
     _isUploading.value = true;
     _error.value = null;
 
+    final startTime = DateTime.now();
+    final imageSize = await imageFile.length();
+
+    await _analytics.logUploadStarted(
+      imageSource: 'file',
+      imageSize: imageSize,
+    );
+
     try {
       final response = await _apiService.uploadImage(
         token: authController.token!,
@@ -73,8 +87,19 @@ class UploadController extends GetxController {
       if (response.success && response.data != null) {
         _uploadResponse.value = response.data;
         await loadLimits();
+
+        final duration = DateTime.now().difference(startTime).inSeconds;
+        await _analytics.logUploadCompleted(
+          imageSource: 'file',
+          duration: duration,
+          imageSize: imageSize,
+        );
       } else {
         _error.value = response.errorMessage;
+        await _analytics.logUploadFailed(
+          errorMessage: response.errorMessage ?? 'Unknown error',
+          imageSource: 'file',
+        );
       }
 
       _isUploading.value = false;
@@ -82,6 +107,10 @@ class UploadController extends GetxController {
     } catch (e) {
       _isUploading.value = false;
       _error.value = 'Failed to upload image';
+      await _analytics.logUploadFailed(
+        errorMessage: e.toString(),
+        imageSource: 'file',
+      );
       return ApiResponse<UploadResponseData>(
         success: false,
         message: 'Failed to upload image',

@@ -43,6 +43,7 @@ class DashboardController extends GetxController {
 
       if (response.success && response.data != null) {
         ddashboard.value = response.data;
+        print('ddashboard tokensBalance: ${ddashboard.value!.tokensBalance}');
       } else {
         _error.value = response.errorMessage;
       }

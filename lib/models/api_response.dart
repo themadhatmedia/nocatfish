@@ -357,6 +357,7 @@ class DashboardData {
       recentResults: (json['recent_results'] as List).map((e) => RecentResult.fromJson(e)).toList(),
       privacyNotice: json['privacy_notice'],
       tokensBalance: json['tokens_remaining'] != null ? json['tokens_remaining'].toString() : '0',
+      // tokensBalance: '0',
     );
   }
 }

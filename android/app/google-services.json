@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "722027629160",
+    "project_id": "catfish-scan",
+    "storage_bucket": "catfish-scan.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:722027629160:android:7ead76e98f1576c2f609dd",
+        "android_client_info": {
+          "package_name": "com.nocatfish.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkbFkGGsg9T8YorzKLdHvp2AlRMhO0quE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

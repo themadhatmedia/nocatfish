@@ -7,11 +7,13 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../controllers/dashboard_controller.dart';
 import '../../controllers/upload_controller.dart';
 import '../../utils/app_theme.dart';
 import '../../widgets/glass_container.dart';
 import '../../widgets/gradient_button.dart';
 import '../../widgets/gradient_text.dart';
+import '../../widgets/low_scans_popup.dart';
 import '../analysis/analysis_screen.dart';
 
 class UploadScreen extends StatefulWidget {
@@ -23,14 +25,35 @@ class UploadScreen extends StatefulWidget {
 
 class _UploadScreenState extends State<UploadScreen> {
   final UploadController _uploadController = Get.put(UploadController());
+  final DashboardController dashboardController = Get.put(DashboardController());
   final ImagePicker _picker = ImagePicker();
   File? _selectedImage;
   // bool _consentAccepted = false;
   bool _consentPermission = false;
-  bool _consentContent = false;
-  bool _consentResult = false;
-  bool _consentTerms = false;
-  bool _consentDefame = false;
+  // bool _consentContent = false;
+  // bool _consentResult = false;
+  // bool _consentTerms = false;
+  // bool _consentDefame = false;
+  bool _hasCheckedScans = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkScansOnLoad();
+    });
+  }
+
+  void _checkScansOnLoad() {
+    print('dashboardController.ddashboard.value: ${dashboardController.ddashboard.value!.tokensBalance}');
+    if (_hasCheckedScans) return;
+    _hasCheckedScans = true;
+
+    final remainingScans = int.parse(dashboardController.ddashboard.value!.tokensBalance.toString());
+    if (remainingScans == 0) {
+      LowScansPopup.show(context, remainingScans);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -326,138 +349,177 @@ class _UploadScreenState extends State<UploadScreen> {
             titleAlignment: ListTileTitleAlignment.top,
             activeColor: AppTheme.brandOrange,
             checkColor: Colors.white,
-            title: const Text(
-              'You own or have permission to scan this photo.',
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 13,
-              ),
-            ),
-            controlAffinity: ListTileControlAffinity.leading,
-            contentPadding: EdgeInsets.zero,
-          ),
-          CheckboxListTile(
-            value: _consentContent,
-            onChanged: (value) {
-              setState(() {
-                _consentContent = value ?? false;
-              });
-            },
-            titleAlignment: ListTileTitleAlignment.top,
-            activeColor: AppTheme.brandOrange,
-            checkColor: Colors.white,
-            title: const Text(
-              'No minors or explicit content will be uploaded.',
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 13,
-              ),
-            ),
-            controlAffinity: ListTileControlAffinity.leading,
-            contentPadding: EdgeInsets.zero,
-          ),
-          CheckboxListTile(
-            value: _consentResult,
-            onChanged: (value) {
-              setState(() {
-                _consentResult = value ?? false;
-              });
-            },
-            titleAlignment: ListTileTitleAlignment.top,
-            activeColor: AppTheme.brandOrange,
-            checkColor: Colors.white,
-            title: const Text(
-              'Results are estimates, not identity verification.',
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 13,
-              ),
-            ),
-            controlAffinity: ListTileControlAffinity.leading,
-            contentPadding: EdgeInsets.zero,
-          ),
-          CheckboxListTile(
-            value: _consentTerms,
-            onChanged: (value) {
-              setState(() {
-                _consentTerms = value ?? false;
-              });
-            },
-            titleAlignment: ListTileTitleAlignment.top,
-            activeColor: AppTheme.brandOrange,
-            checkColor: Colors.white,
-            // title: Text(
-            //   'You agree to the Terms of Use & Privacy Policy.',
-            //   style: TextStyle(
-            //     color: Colors.white70,
-            //     fontSize: 13,
-            //   ),
-            // ),
-            title: RichText(
-              text: TextSpan(
-                text: 'You agree to the ',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 13,
+            title: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(bottom: 10.0),
+                  child: Text(
+                    '• You own or have permission to scan this photo.',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 13,
+                    ),
+                  ),
                 ),
-                children: [
-                  TextSpan(
-                    text: 'Terms of Use',
-                    style: const TextStyle(
-                      color: Colors.blue,
-                      decoration: TextDecoration.underline,
+                Padding(
+                  padding: EdgeInsets.only(bottom: 10.0),
+                  child: Text(
+                    '• No minors or explicit content will be uploaded.',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 13,
                     ),
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () async {
-                        print("Terms of Service clicked");
-                        final url = Uri.parse(AppTheme.terms);
-                        if (await canLaunchUrl(url)) {
-                          await launchUrl(url, mode: LaunchMode.externalApplication);
-                        }
-                      },
                   ),
-                  TextSpan(text: ' & '),
-                  TextSpan(
-                    text: 'Privacy Policy',
-                    style: const TextStyle(
-                      color: Colors.blue, // link color
-                      decoration: TextDecoration.underline,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(bottom: 10.0),
+                  child: Text(
+                    '• Results are estimates, not identity verification.',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 13,
                     ),
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () async {
-                        print("Privacy Policy clicked");
-                        final url = Uri.parse(AppTheme.privacyPolicy);
-                        if (await canLaunchUrl(url)) {
-                          await launchUrl(url, mode: LaunchMode.externalApplication);
-                        }
-                      },
                   ),
-                ],
-              ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(bottom: 10.0),
+                  child: RichText(
+                    text: TextSpan(
+                      text: '• You agree to the ',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 13,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: 'Terms of Use',
+                          style: const TextStyle(
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () async {
+                              print("Terms of Service clicked");
+                              final url = Uri.parse(AppTheme.terms);
+                              if (await canLaunchUrl(url)) {
+                                await launchUrl(url, mode: LaunchMode.externalApplication);
+                              }
+                            },
+                        ),
+                        TextSpan(text: ' & '),
+                        TextSpan(
+                          text: 'Privacy Policy',
+                          style: const TextStyle(
+                            color: Colors.blue, // link color
+                            decoration: TextDecoration.underline,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () async {
+                              print("Privacy Policy clicked");
+                              final url = Uri.parse(AppTheme.privacyPolicy);
+                              if (await canLaunchUrl(url)) {
+                                await launchUrl(url, mode: LaunchMode.externalApplication);
+                              }
+                            },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Text(
+                  '• You will not use results to harass or defame others.',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
             ),
             controlAffinity: ListTileControlAffinity.leading,
             contentPadding: EdgeInsets.zero,
           ),
-          CheckboxListTile(
-            value: _consentDefame,
-            onChanged: (value) {
-              setState(() {
-                _consentDefame = value ?? false;
-              });
-            },
-            titleAlignment: ListTileTitleAlignment.top,
-            activeColor: AppTheme.brandOrange,
-            checkColor: Colors.white,
-            title: const Text(
-              'You will not use results to harass or defame others.',
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 13,
-              ),
-            ),
-            controlAffinity: ListTileControlAffinity.leading,
-            contentPadding: EdgeInsets.zero,
-          ),
+          // CheckboxListTile(
+          //   value: _consentTerms,
+          //   onChanged: (value) {
+          //     setState(() {
+          //       _consentTerms = value ?? false;
+          //     });
+          //   },
+          //   titleAlignment: ListTileTitleAlignment.top,
+          //   activeColor: AppTheme.brandOrange,
+          //   checkColor: Colors.white,
+          //   // title: Text(
+          //   //   'You agree to the Terms of Use & Privacy Policy.',
+          //   //   style: TextStyle(
+          //   //     color: Colors.white70,
+          //   //     fontSize: 13,
+          //   //   ),
+          //   // ),
+          //   title: RichText(
+          //     text: TextSpan(
+          //       text: 'You agree to the ',
+          //       style: TextStyle(
+          //         color: Colors.white70,
+          //         fontSize: 13,
+          //       ),
+          //       children: [
+          //         TextSpan(
+          //           text: 'Terms of Use',
+          //           style: const TextStyle(
+          //             color: Colors.blue,
+          //             decoration: TextDecoration.underline,
+          //           ),
+          //           recognizer: TapGestureRecognizer()
+          //             ..onTap = () async {
+          //               print("Terms of Service clicked");
+          //               final url = Uri.parse(AppTheme.terms);
+          //               if (await canLaunchUrl(url)) {
+          //                 await launchUrl(url, mode: LaunchMode.externalApplication);
+          //               }
+          //             },
+          //         ),
+          //         TextSpan(text: ' & '),
+          //         TextSpan(
+          //           text: 'Privacy Policy',
+          //           style: const TextStyle(
+          //             color: Colors.blue, // link color
+          //             decoration: TextDecoration.underline,
+          //           ),
+          //           recognizer: TapGestureRecognizer()
+          //             ..onTap = () async {
+          //               print("Privacy Policy clicked");
+          //               final url = Uri.parse(AppTheme.privacyPolicy);
+          //               if (await canLaunchUrl(url)) {
+          //                 await launchUrl(url, mode: LaunchMode.externalApplication);
+          //               }
+          //             },
+          //         ),
+          //       ],
+          //     ),
+          //   ),
+          //   controlAffinity: ListTileControlAffinity.leading,
+          //   contentPadding: EdgeInsets.zero,
+          // ),
+          // CheckboxListTile(
+          //   value: _consentDefame,
+          //   onChanged: (value) {
+          //     setState(() {
+          //       _consentDefame = value ?? false;
+          //     });
+          //   },
+          //   titleAlignment: ListTileTitleAlignment.top,
+          //   activeColor: AppTheme.brandOrange,
+          //   checkColor: Colors.white,
+          //   title: const Text(
+          //     'You will not use results to harass or defame others.',
+          //     style: TextStyle(
+          //       color: Colors.white70,
+          //       fontSize: 13,
+          //     ),
+          //   ),
+          //   controlAffinity: ListTileControlAffinity.leading,
+          //   contentPadding: EdgeInsets.zero,
+          // ),
         ],
       ),
     ).animate().fadeIn(delay: 800.ms, duration: 600.ms).slideY(begin: 0.2, end: 0);
@@ -466,7 +528,7 @@ class _UploadScreenState extends State<UploadScreen> {
   Widget _buildAnalyzeButton() {
     return Obx(() {
       final isUploading = _uploadController.isUploading;
-      final canAnalyze = _selectedImage != null && (_consentPermission && _consentContent && _consentResult && _consentTerms && _consentDefame) && !isUploading;
+      final canAnalyze = _selectedImage != null && (_consentPermission) && !isUploading;
 
       return GradientButton(
         text: isUploading ? 'Uploading...' : 'Analyze Photo',
@@ -573,14 +635,37 @@ class _UploadScreenState extends State<UploadScreen> {
   }
 
   Future<void> _uploadAndAnalyze() async {
-    if (_selectedImage == null || (!_consentPermission && !_consentContent && !_consentResult && !_consentTerms && !_consentDefame)) return;
+    if (_selectedImage == null || (!_consentPermission)) return;
+
+    final remainingScans = int.parse(dashboardController.ddashboard.value!.tokensBalance.toString());
+
+    if (remainingScans == 0) {
+      LowScansPopup.show(context, remainingScans);
+      Get.snackbar(
+        'No Coins Available',
+        'You need to purchase more coins to continue',
+        backgroundColor: Colors.red.shade900,
+        colorText: Colors.white,
+        icon: const Icon(Icons.error, color: Colors.white),
+        duration: const Duration(seconds: 4),
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
+      );
+      return;
+    }
+
+    if (remainingScans < 5) {
+      LowScansPopup.show(context, remainingScans);
+    }
 
     final result = await _uploadController.uploadImage(_selectedImage!);
 
     if (result.success && result.data != null) {
-      Get.to(() => AnalysisScreen(
-            consentLogId: result.data!.consentLogId,
-          ));
+      Get.to(
+        () => AnalysisScreen(
+          consentLogId: result.data!.consentLogId,
+        ),
+      );
     } else {
       Get.snackbar(
         'Upload Failed',

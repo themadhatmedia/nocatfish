@@ -1,12 +1,14 @@
 import 'package:get/get.dart';
 
 import '../models/api_response.dart';
+import '../services/analytics_service.dart';
 import '../services/api_service.dart';
 import '../services/storage_service.dart';
 
 class AuthController extends GetxController {
   final StorageService _storage = StorageService();
   final ApiService _apiService = ApiService();
+  late final AnalyticsService _analytics;
 
   final Rx<String?> _token = Rx<String?>(null);
   final Rx<Map<String, dynamic>?> _user = Rx<Map<String, dynamic>?>(null);
@@ -23,6 +25,7 @@ class AuthController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _analytics = Get.find<AnalyticsService>();
     loadAuthData();
   }
 
@@ -73,6 +76,8 @@ class AuthController extends GetxController {
     _isLoading.value = true;
     _error.value = null;
 
+    await _analytics.logLoginStarted(method: 'email');
+
     try {
       final response = await _apiService.login(
         email: email,
@@ -87,8 +92,22 @@ class AuthController extends GetxController {
 
         await _storage.saveToken(authData.token);
         await _storage.saveUser(authData.user.toJson());
+
+        await _analytics.logLoginCompleted(
+          userId: authData.user.id.toString(),
+          method: 'email',
+        );
+        await _analytics.setUserId(authData.user.id.toString());
+        await _analytics.setUserProperties(
+          email: authData.user.email,
+          name: authData.user.name,
+        );
       } else {
         _error.value = response.errorMessage;
+        await _analytics.logLoginFailed(
+          errorMessage: response.errorMessage,
+          method: 'email',
+        );
       }
 
       _isLoading.value = false;
@@ -96,6 +115,10 @@ class AuthController extends GetxController {
     } catch (e) {
       _isLoading.value = false;
       _error.value = 'An unexpected error occurred';
+      await _analytics.logLoginFailed(
+        errorMessage: e.toString(),
+        method: 'email',
+      );
       return ApiResponse<AuthData>(
         success: false,
         message: 'An unexpected error occurred',
@@ -110,6 +133,8 @@ class AuthController extends GetxController {
   ) async {
     _isLoading.value = true;
     _error.value = null;
+
+    await _analytics.logSignUpStarted(method: 'email');
 
     try {
       final response = await _apiService.register(
@@ -127,8 +152,22 @@ class AuthController extends GetxController {
 
         await _storage.saveToken(authData.token);
         await _storage.saveUser(authData.user.toJson());
+
+        await _analytics.logSignUpCompleted(
+          userId: authData.user.id.toString(),
+          method: 'email',
+        );
+        await _analytics.setUserId(authData.user.id.toString());
+        await _analytics.setUserProperties(
+          email: authData.user.email,
+          name: authData.user.name,
+        );
       } else {
         _error.value = response.errorMessage;
+        await _analytics.logSignUpFailed(
+          errorMessage: response.errorMessage,
+          method: 'email',
+        );
       }
 
       _isLoading.value = false;
@@ -136,6 +175,10 @@ class AuthController extends GetxController {
     } catch (e) {
       _isLoading.value = false;
       _error.value = 'An unexpected error occurred';
+      await _analytics.logSignUpFailed(
+        errorMessage: e.toString(),
+        method: 'email',
+      );
       return ApiResponse<AuthData>(
         success: false,
         message: 'An unexpected error occurred',

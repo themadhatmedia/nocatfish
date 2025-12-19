@@ -37,6 +37,8 @@ dependencies:
   url_launcher: ^6.3.2
   pinput: ^6.0.1
   flutter_intl_phone_field: ^0.0.7
+  firebase_core: ^4.3.0
+  firebase_analytics: ^12.1.0
 
 flutter_icons:
   android: "ic_launcher"

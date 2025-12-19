@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import '../config/stripe_config.dart';
 import '../utils/app_theme.dart';
 import '../widgets/payment_buttons.dart';
+import 'analytics_service.dart';
 import 'storage_service.dart';
 
 class StripeService {
@@ -42,6 +43,9 @@ class StripeService {
   Future<bool> collectPayment({
     required double amount,
     required String currency,
+    required AnalyticsService analytics,
+    required String planId,
+    required String planName,
   }) async {
     if (!_isInitialized) {
       debugPrint('⚠️ Stripe not initialized');
@@ -315,6 +319,10 @@ class StripeService {
 
       if (e.error.code == FailureCode.Canceled) {
         debugPrint('ℹ️ Payment canceled by user');
+        await analytics.logPurchaseCancelled(
+          packageId: planId.toString(),
+          paymentMethod: 'stripe',
+        );
       }
 
       return false;
@@ -325,9 +333,20 @@ class StripeService {
       if (e.toString().contains('NullPointerException') || e.toString().contains('java.lang.reflect.Method.invoke')) {
         debugPrint('⚠️ Caught post-payment NullPointerException - payment likely succeeded');
         debugPrint('✅ Treating as successful payment');
+        await analytics.logPurchaseCompleted(
+          packageId: planId.toString(),
+          packageName: planName,
+          price: amount,
+          paymentMethod: 'stripe',
+        );
         return true;
       }
 
+      await analytics.logPurchaseFailed(
+        packageId: planId.toString(),
+        errorMessage: e.toString(),
+        paymentMethod: 'stripe',
+      );
       debugPrint('❌ Payment error: $e');
       debugPrint('❌ Stack trace: $stackTrace');
       return false;

@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -7,6 +8,7 @@ import 'controllers/dashboard_controller.dart';
 import 'controllers/theme_controller.dart';
 import 'controllers/upload_controller.dart';
 import 'screens/splash_screen.dart';
+import 'services/analytics_service.dart';
 import 'services/storage_service.dart';
 import 'services/stripe_service.dart';
 import 'utils/app_theme.dart';
@@ -18,10 +20,17 @@ void main() async {
 
   await StripeService().initialize();
 
+  await Firebase.initializeApp();
+
+  await Get.putAsync(() => AnalyticsService().init());
+
   Get.put(AuthController());
   Get.put(ThemeController());
   Get.put(DashboardController());
   Get.put(UploadController());
+
+  final analytics = Get.find<AnalyticsService>();
+  await analytics.logAppOpened();
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

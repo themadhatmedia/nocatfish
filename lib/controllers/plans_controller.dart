@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
 import '../models/plan_model.dart';
+import '../services/analytics_service.dart';
 import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../services/stripe_service.dart';
@@ -10,6 +11,7 @@ class PlansController extends GetxController {
   final ApiService _apiService = ApiService();
   final StorageService _storageService = StorageService();
   final StripeService _stripeService = StripeService();
+  late final AnalyticsService _analytics;
 
   final RxBool _isLoading = false.obs;
   final RxBool _isPurchasing = false.obs;
@@ -29,6 +31,7 @@ class PlansController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _analytics = Get.find<AnalyticsService>();
     loadPlans();
   }
 
@@ -88,10 +91,23 @@ class PlansController extends GetxController {
     _isPurchasing.value = true;
     _error.value = '';
 
+    final plan = _plans.firstWhereOrNull((p) => p.id == planId);
+    final planName = plan?.name ?? 'Unknown Plan';
+
+    await _analytics.logPurchaseStarted(
+      packageId: planId.toString(),
+      packageName: planName,
+      price: amount,
+      paymentMethod: 'stripe',
+    );
+
     try {
       final paymentSuccess = await _stripeService.collectPayment(
         amount: amount,
         currency: 'usd',
+        analytics: _analytics,
+        planId: planId.toString(),
+        planName: planName.toString(),
       );
 
       print('paymentSuccess: $paymentSuccess');
@@ -100,6 +116,11 @@ class PlansController extends GetxController {
         debugPrint('payment here 3');
         _error.value = 'Payment was not completed';
         _isPurchasing.value = false;
+        await _analytics.logPurchaseFailed(
+          packageId: planId.toString(),
+          errorMessage: 'Not authenticated',
+          paymentMethod: 'stripe',
+        );
         return false;
       }
 

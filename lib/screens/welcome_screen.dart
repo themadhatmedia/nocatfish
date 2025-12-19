@@ -7,6 +7,7 @@ import '../widgets/glass_container.dart';
 import '../widgets/gradient_button.dart';
 import '../widgets/gradient_text.dart';
 import 'auth/login_screen.dart';
+import 'auth/login_screen_old.dart';
 import 'auth/register_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -162,7 +163,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     // const SizedBox(height: 15.0),
                     TextButton(
                       onPressed: () {
-                        Get.to(() => const LoginScreen());
+                        // Get.to(() => const LoginScreen());
+                        Get.to(() => const LoginScreenOld());
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
