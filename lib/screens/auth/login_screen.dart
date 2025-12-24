@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:get/get.dart';
 import 'package:flutter_intl_phone_field/flutter_intl_phone_field.dart';
+import 'package:get/get.dart';
+
+import '../../controllers/auth_controller.dart';
 import '../../utils/app_theme.dart';
 import '../../widgets/glass_container.dart';
 import '../../widgets/gradient_button.dart';
 import '../../widgets/gradient_text.dart';
-import '../../controllers/auth_controller.dart';
-import 'register_screen.dart';
 import 'otp_verification_screen.dart';
+import 'register_screen_old.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -213,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  Get.off(() => const RegisterScreen());
+                                  Get.off(() => const RegisterScreenOld());
                                 },
                                 child: Text(
                                   'Sign Up',

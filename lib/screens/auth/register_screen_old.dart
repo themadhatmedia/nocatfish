@@ -12,14 +12,14 @@ import '../../widgets/gradient_button.dart';
 import '../../widgets/gradient_text.dart';
 import 'login_screen.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class RegisterScreenOld extends StatefulWidget {
+  const RegisterScreenOld({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<RegisterScreenOld> createState() => _RegisterScreenOldState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenOldState extends State<RegisterScreenOld> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();

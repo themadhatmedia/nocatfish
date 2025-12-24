@@ -20,6 +20,7 @@ class ApiService {
     required String email,
     required String password,
     required String passwordConfirmation,
+    required String udid,
   }) async {
     try {
       final url = Uri.parse('${ApiConfig.apiBaseUrl}${ApiEndpoints.register}');
@@ -28,6 +29,7 @@ class ApiService {
         'email': email,
         'password': password,
         'password_confirmation': passwordConfirmation,
+        'device_id': udid,
         'privacy_policy_accepted': true,
         'terms_accepted': true,
       };
@@ -75,12 +77,14 @@ class ApiService {
   Future<ApiResponse<AuthData>> login({
     required String email,
     required String password,
+    required String udid,
   }) async {
     try {
       final url = Uri.parse('${ApiConfig.apiBaseUrl}${ApiEndpoints.login}');
       final body = {
         'email': email,
         'password': password,
+        'device_id': udid,
       };
 
       print('\n=== API REQUEST: LOGIN ===');

@@ -270,6 +270,12 @@ class StripeService {
         print('gPay: $gPay');
         if (gPay != null) {
           print('🟢 Payment completed successfully with gpay');
+          await analytics.logPurchaseCompleted(
+            packageId: planId.toString(),
+            packageName: planName,
+            price: amount,
+            paymentMethod: 'google pay',
+          );
           return true;
         } else {
           print('❌ Payment not completed with gpay');
@@ -280,6 +286,12 @@ class StripeService {
         print('applePay: $applePay');
         if (applePay != null) {
           print('🟢 Payment completed successfully with apple pay');
+          await analytics.logPurchaseCompleted(
+            packageId: planId.toString(),
+            packageName: planName,
+            price: amount,
+            paymentMethod: 'apple pay',
+          );
           return true;
         } else {
           print('❌ Payment not completed with apple pay');
@@ -321,7 +333,7 @@ class StripeService {
         debugPrint('ℹ️ Payment canceled by user');
         await analytics.logPurchaseCancelled(
           packageId: planId.toString(),
-          paymentMethod: 'stripe',
+          paymentMethod: 'card or other method',
         );
       }
 
@@ -337,7 +349,7 @@ class StripeService {
           packageId: planId.toString(),
           packageName: planName,
           price: amount,
-          paymentMethod: 'stripe',
+          paymentMethod: 'card or other method',
         );
         return true;
       }
@@ -345,7 +357,7 @@ class StripeService {
       await analytics.logPurchaseFailed(
         packageId: planId.toString(),
         errorMessage: e.toString(),
-        paymentMethod: 'stripe',
+        paymentMethod: 'card or other method',
       );
       debugPrint('❌ Payment error: $e');
       debugPrint('❌ Stack trace: $stackTrace');

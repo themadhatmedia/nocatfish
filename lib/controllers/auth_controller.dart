@@ -1,8 +1,10 @@
+import 'package:flutter_udid/flutter_udid.dart';
 import 'package:get/get.dart';
-import '../services/analytics_service.dart';
-import '../services/storage_service.dart';
-import '../services/api_service.dart';
+
 import '../models/api_response.dart';
+import '../services/analytics_service.dart';
+import '../services/api_service.dart';
+import '../services/storage_service.dart';
 
 class AuthController extends GetxController {
   final StorageService _storage = StorageService();
@@ -66,12 +68,16 @@ class AuthController extends GetxController {
         _user.value = userData;
         await _storage.saveUser(userData);
       }
-    } catch (e) {}
+    } catch (e) {
+      print('auth catch: $e');
+    }
   }
 
   Future<ApiResponse<AuthData>> login(String email, String password) async {
     _isLoading.value = true;
     _error.value = null;
+    String udid = await FlutterUdid.consistentUdid;
+    print('udid login: $udid');
 
     await _analytics.logLoginStarted(method: 'email');
 
@@ -79,6 +85,7 @@ class AuthController extends GetxController {
       final response = await _apiService.login(
         email: email,
         password: password,
+        udid: udid,
       );
 
       if (response.success && response.data != null) {
@@ -130,6 +137,8 @@ class AuthController extends GetxController {
   ) async {
     _isLoading.value = true;
     _error.value = null;
+    String udid = await FlutterUdid.consistentUdid;
+    print('udid login: $udid');
 
     await _analytics.logSignUpStarted(method: 'email');
 
@@ -139,6 +148,7 @@ class AuthController extends GetxController {
         email: email,
         password: password,
         passwordConfirmation: password,
+        udid: udid,
       );
 
       if (response.success && response.data != null) {

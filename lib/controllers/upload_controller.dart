@@ -74,7 +74,7 @@ class UploadController extends GetxController {
     final imageSize = await imageFile.length();
 
     await _analytics.logUploadStarted(
-      imageSource: 'file',
+      imageSource: 'gallery',
       imageSize: imageSize,
     );
 
@@ -86,11 +86,11 @@ class UploadController extends GetxController {
 
       if (response.success && response.data != null) {
         _uploadResponse.value = response.data;
-        await loadLimits();
+        // await loadLimits();
 
         final duration = DateTime.now().difference(startTime).inSeconds;
         await _analytics.logUploadCompleted(
-          imageSource: 'file',
+          imageSource: 'gallery',
           duration: duration,
           imageSize: imageSize,
         );
@@ -98,7 +98,7 @@ class UploadController extends GetxController {
         _error.value = response.errorMessage;
         await _analytics.logUploadFailed(
           errorMessage: response.errorMessage ?? 'Unknown error',
-          imageSource: 'file',
+          imageSource: 'gallery',
         );
       }
 

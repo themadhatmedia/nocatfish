@@ -6,9 +6,8 @@ import '../utils/app_theme.dart';
 import '../widgets/glass_container.dart';
 import '../widgets/gradient_button.dart';
 import '../widgets/gradient_text.dart';
-import 'auth/login_screen.dart';
 import 'auth/login_screen_old.dart';
-import 'auth/register_screen.dart';
+import 'auth/register_screen_old.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -155,7 +154,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     GradientButton(
                       text: 'Get Started',
                       onPressed: () {
-                        Get.to(() => const RegisterScreen());
+                        // Get.to(() => const RegisterScreen());
+                        Get.to(() => const RegisterScreenOld());
                       },
                       gradient: AppTheme.primaryGradient,
                       icon: Icons.arrow_forward,

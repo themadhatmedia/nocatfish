@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
+
+import '../../controllers/auth_controller.dart';
 import '../../utils/app_theme.dart';
+import '../../widgets/custom_text_field.dart';
 import '../../widgets/glass_container.dart';
 import '../../widgets/gradient_button.dart';
 import '../../widgets/gradient_text.dart';
-import '../../widgets/custom_text_field.dart';
-import '../../controllers/auth_controller.dart';
 import '../home/home_screen.dart';
-import 'register_screen.dart';
+import 'register_screen_old.dart';
 
 class LoginScreenOld extends StatefulWidget {
   const LoginScreenOld({super.key});
@@ -32,7 +33,9 @@ class _LoginScreenOldState extends State<LoginScreenOld> {
   }
 
   Future<void> _handleLogin() async {
+    
     if (!_formKey.currentState!.validate()) return;
+    // return;F
 
     setState(() => _isLoading = true);
 
@@ -205,7 +208,7 @@ class _LoginScreenOldState extends State<LoginScreenOld> {
                     Center(
                       child: TextButton(
                         onPressed: () {
-                          Get.off(() => const RegisterScreen());
+                          Get.off(() => const RegisterScreenOld());
                         },
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
