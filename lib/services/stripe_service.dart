@@ -320,6 +320,12 @@ class StripeService {
       }
 
       await Future.delayed(const Duration(milliseconds: 500));
+      await analytics.logPurchaseCompleted(
+        packageId: planId.toString(),
+        packageName: planName,
+        price: amount,
+        paymentMethod: 'card or other method',
+      );
 
       debugPrint('✅ Payment successful');
       return true;
