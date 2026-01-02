@@ -10,7 +10,7 @@ import '../../widgets/custom_text_field.dart';
 import '../../widgets/glass_container.dart';
 import '../../widgets/gradient_button.dart';
 import '../../widgets/gradient_text.dart';
-import 'login_screen.dart';
+import 'login_screen_old.dart';
 
 class RegisterScreenOld extends StatefulWidget {
   const RegisterScreenOld({super.key});
@@ -332,7 +332,7 @@ class _RegisterScreenOldState extends State<RegisterScreenOld> {
                     Center(
                       child: TextButton(
                         onPressed: () {
-                          Get.off(() => const LoginScreen());
+                          Get.off(() => const LoginScreenOld());
                         },
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
