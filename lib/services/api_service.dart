@@ -943,6 +943,55 @@ class ApiService {
     }
   }
 
+  Future<ApiResponse<void>> forgotPassword({
+    required String email,
+  }) async {
+    try {
+      final url = Uri.parse('${ApiConfig.apiBaseUrl}${ApiEndpoints.forgotPassword}');
+      final body = {
+        'email': email,
+      };
+
+      print('\n=== API REQUEST: FORGOT PASSWORD ===');
+      print('URL: $url');
+      print('Method: POST');
+      print('Body: ${jsonEncode(body)}');
+
+      final response = await http
+          .post(
+            url,
+            headers: ApiConfig.getHeaders(),
+            body: jsonEncode(body),
+          )
+          .timeout(ApiConfig.connectTimeout);
+
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+      print('=== END REQUEST ===\n');
+
+      final jsonData = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return ApiResponse<void>(
+          success: true,
+          message: jsonData['message'] ?? 'Password reset link has been sent to your email',
+        );
+      } else {
+        return ApiResponse<void>(
+          success: false,
+          message: jsonData['message'] ?? 'Failed to send password reset link',
+          errors: jsonData['errors'],
+        );
+      }
+    } catch (e) {
+      print('❌ Forgot Password error: $e');
+      return ApiResponse<void>(
+        success: false,
+        message: _handleError(e),
+      );
+    }
+  }
+
   String _handleError(dynamic error) {
     print('error.message: ${error.message}');
     if (error is SocketException) {

@@ -9,6 +9,7 @@ import '../../widgets/glass_container.dart';
 import '../../widgets/gradient_button.dart';
 import '../../widgets/gradient_text.dart';
 import '../home/home_screen.dart';
+import 'forgot_password_screen.dart';
 import 'register_screen_old.dart';
 
 class LoginScreenOld extends StatefulWidget {
@@ -33,7 +34,6 @@ class _LoginScreenOldState extends State<LoginScreenOld> {
   }
 
   Future<void> _handleLogin() async {
-    
     if (!_formKey.currentState!.validate()) return;
     // return;F
 
@@ -182,7 +182,9 @@ class _LoginScreenOldState extends State<LoginScreenOld> {
                           Align(
                             alignment: Alignment.centerRight,
                             child: TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Get.to(() => const ForgotPasswordScreen());
+                              },
                               child: GradientText(
                                 text: 'Forgot Password?',
                                 gradient: AppTheme.primaryGradient,
