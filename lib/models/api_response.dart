@@ -177,7 +177,7 @@ class DetectionItem {
   final String label;
   final String description;
   final int confidence;
-  final int scoreContribution;
+  final double scoreContribution;
 
   DetectionItem({
     required this.type,
@@ -193,7 +193,7 @@ class DetectionItem {
       label: json['label'],
       description: json['description'],
       confidence: json['confidence'],
-      scoreContribution: json['score_contribution'],
+      scoreContribution: double.parse(json['score_contribution'].toString()),
     );
   }
 }
