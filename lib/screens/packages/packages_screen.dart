@@ -339,14 +339,16 @@ class _PackagesScreenState extends State<PackagesScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Get.back(result: false),
+            // onPressed: () => Get.back(result: false),
+            onPressed: () => Navigator.pop(context, false),
             child: const Text(
               'Cancel',
               style: TextStyle(color: Colors.white60),
             ),
           ),
           TextButton(
-            onPressed: () => Get.back(result: true),
+            // onPressed: () => Get.back(result: true),
+            onPressed: () => Navigator.pop(context, true),
             child: const Text(
               'Confirm',
               style: TextStyle(color: AppTheme.primaryColor),
