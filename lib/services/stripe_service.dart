@@ -28,9 +28,9 @@ class StripeService {
 
     try {
       Stripe.publishableKey = StripeConfig.publishableKey;
-      Stripe.merchantIdentifier = StripeConfig.merchantDisplayName;
-
-      // await Stripe.instance.applySettings();
+      Stripe.merchantIdentifier = "merchant.com.nocatfish.app";
+      Stripe.urlScheme = 'flutterstripe';
+      await Stripe.instance.applySettings();
 
       _isInitialized = true;
       debugPrint('✅ Stripe initialized successfully');
@@ -90,7 +90,8 @@ class StripeService {
         allowsDelayedPaymentMethods: true,
         googlePay: PaymentSheetGooglePay(
           merchantCountryCode: 'US', // Or your country code
-          testEnv: true, // Set to false for production
+          currencyCode: 'USD',
+          testEnv: false, // Set to false for production
         ),
         applePay: PaymentSheetApplePay(
           merchantCountryCode: 'US',

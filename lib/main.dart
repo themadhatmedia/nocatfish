@@ -19,6 +19,10 @@ void main() async {
   await StorageService().init();
 
   await StripeService().initialize();
+  // Stripe.publishableKey = StripeConfig.publishableKey;
+  // Stripe.merchantIdentifier = "merchant.com.nocatfish.app";
+  // Stripe.urlScheme = 'flutterstripe';
+  // Stripe.instance.applySettings();
 
   await Firebase.initializeApp();
 
