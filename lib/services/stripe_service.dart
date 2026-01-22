@@ -381,7 +381,7 @@ class StripeService {
           clientSecret: clientSecret,
           confirmParams: const PlatformPayConfirmParams.googlePay(
             googlePay: GooglePayParams(
-              testEnv: true,
+              testEnv: false,
               merchantName: 'Catfish Scan',
               merchantCountryCode: 'US',
               currencyCode: 'USD',
