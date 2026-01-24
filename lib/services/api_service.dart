@@ -992,6 +992,59 @@ class ApiService {
     }
   }
 
+  Future<ApiResponse<void>> sendContactForm({
+    required String name,
+    required String email,
+    required String message,
+  }) async {
+    try {
+      final url = Uri.parse('${ApiConfig.apiBaseUrl}/support/contact');
+      final body = {
+        'name': name,
+        'email': email,
+        'message': message,
+      };
+
+      print('\n=== API REQUEST: SEND CONTACT FORM ===');
+      print('URL: $url');
+      print('Method: POST');
+      print('Body: ${jsonEncode(body)}');
+
+      final response = await http
+          .post(
+            url,
+            headers: ApiConfig.getHeaders(),
+            body: jsonEncode(body),
+          )
+          .timeout(ApiConfig.connectTimeout);
+
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+      print('=== END REQUEST ===\n');
+
+      final jsonData = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return ApiResponse<void>(
+          success: true,
+          message: jsonData['message'] ?? 'Thank you for contacting us',
+        );
+      } else {
+        return ApiResponse<void>(
+          success: false,
+          message: jsonData['message'] ?? 'Failed to send message',
+          errors: jsonData['errors'],
+        );
+      }
+    } catch (e) {
+      print('❌ Send Contact Form error: $e');
+      return ApiResponse<void>(
+        success: false,
+        message: _handleError(e),
+      );
+    }
+  }
+
   String _handleError(dynamic error) {
     print('error.message: ${error.message}');
     if (error is SocketException) {

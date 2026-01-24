@@ -11,6 +11,7 @@ import '../../widgets/glass_container.dart';
 import '../../widgets/gradient_button.dart';
 import '../../widgets/gradient_text.dart';
 import '../packages/packages_screen.dart';
+import '../support/contact_screen.dart';
 import '../welcome_screen.dart';
 import 'edit_profile_screen.dart';
 
@@ -287,7 +288,10 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const Divider(color: Colors.white24, height: 1),
+                      const Divider(
+                        color: Colors.white24,
+                        height: 1,
+                      ),
                       GestureDetector(
                         onTap: () async {
                           final url = Uri.parse(AppTheme.terms);
@@ -305,17 +309,28 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      // const Divider(color: Colors.white24, height: 1),
-                      // _buildSettingItem(
-                      //   icon: Icons.help_outline,
-                      //   title: 'Help & Support',
-                      //   trailing: const Icon(
-                      //     Icons.arrow_forward_ios,
-                      //     color: Colors.white54,
-                      //     size: 16,
-                      //   ),
-                      // ),
-                      const Divider(color: Colors.white24, height: 1),
+                      const Divider(
+                        color: Colors.white24,
+                        height: 1,
+                      ),
+                      GestureDetector(
+                        onTap: () async {
+                          Get.to(() => const ContactScreen());
+                        },
+                        child: _buildSettingItem(
+                          icon: Icons.help_outline,
+                          title: 'Help & Support',
+                          trailing: const Icon(
+                            Icons.arrow_forward_ios,
+                            color: Colors.white54,
+                            size: 16,
+                          ),
+                        ),
+                      ),
+                      const Divider(
+                        color: Colors.white24,
+                        height: 1,
+                      ),
                       _buildSettingItem(
                         icon: Icons.info_outline,
                         title: 'About',
