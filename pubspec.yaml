@@ -40,6 +40,7 @@ dependencies:
   firebase_core: ^4.3.0
   firebase_analytics: ^12.1.0
   flutter_udid: ^4.1.1
+  in_app_purchase: ^3.2.3
 
 flutter_icons:
   android: "ic_launcher"

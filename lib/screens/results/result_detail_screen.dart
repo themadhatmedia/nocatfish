@@ -45,7 +45,7 @@ class _ResultDetailScreenState extends State<ResultDetailScreen> {
   void initState() {
     super.initState();
     _loadResults();
-    listenForScreenshot();
+    // listenForScreenshot();
   }
 
   void listenForScreenshot() async {

@@ -352,6 +352,34 @@ class ProfileScreen extends StatelessWidget {
                   height: 56,
                   icon: Icons.logout,
                 ).animate().fadeIn(delay: 1200.ms, duration: 600.ms).slideY(begin: 0.2, end: 0),
+                const SizedBox(height: 30),
+                OutlinedButton.icon(
+                  onPressed: () => _handleDeleteAccount(authController),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 16,
+                    ),
+                    minimumSize: const Size(double.infinity, 56),
+                    side: const BorderSide(color: Colors.red, width: 2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  icon: const Icon(
+                    Icons.delete_forever,
+                    color: Colors.red,
+                    size: 24,
+                  ),
+                  label: const Text(
+                    'Delete Account',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ).animate().fadeIn(delay: 1300.ms, duration: 600.ms).slideY(begin: 0.2, end: 0),
                 const SizedBox(height: 40),
               ],
             );
@@ -488,6 +516,185 @@ class ProfileScreen extends StatelessWidget {
             child: const Text(
               'Logout',
               style: TextStyle(color: AppTheme.darkOrange),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _handleDeleteAccount(AuthController authController) async {
+    Get.dialog(
+      AlertDialog(
+        backgroundColor: const Color(0xFF2a3342),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Row(
+          children: [
+            const Icon(
+              Icons.warning_amber_rounded,
+              color: Colors.red,
+              size: 28,
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'Delete Account',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Are you absolutely sure?',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'This action cannot be undone. This will permanently delete your account and remove all your data including:',
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 14,
+              ),
+            ),
+            const SizedBox(height: 12),
+            _buildDeleteWarningItem('All your uploaded images'),
+            _buildDeleteWarningItem('All analysis results'),
+            _buildDeleteWarningItem('Your profile information'),
+            _buildDeleteWarningItem('Your subscription and purchases'),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.red.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.red.withOpacity(0.3)),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.info_outline, color: Colors.red, size: 20),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'This action is permanent and irreversible',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            ),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 16,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Get.back();
+
+              Get.dialog(
+                const Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.red,
+                  ),
+                ),
+                barrierDismissible: false,
+              );
+
+              final response = await authController.deleteAccount();
+
+              Get.back();
+
+              if (response.success) {
+                Get.offAll(() => const WelcomeScreen());
+
+                Get.snackbar(
+                  'Account Deleted',
+                  'Your account has been permanently deleted',
+                  backgroundColor: Colors.green,
+                  colorText: Colors.white,
+                  snackPosition: SnackPosition.BOTTOM,
+                  margin: const EdgeInsets.all(16),
+                  duration: const Duration(seconds: 3),
+                  icon: const Icon(Icons.check_circle, color: Colors.white),
+                );
+              } else {
+                Get.snackbar(
+                  'Error',
+                  response.errorMessage,
+                  backgroundColor: Colors.red,
+                  colorText: Colors.white,
+                  snackPosition: SnackPosition.BOTTOM,
+                  margin: const EdgeInsets.all(16),
+                  duration: const Duration(seconds: 4),
+                  icon: const Icon(Icons.error, color: Colors.white),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text(
+              'Yes, Delete My Account',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDeleteWarningItem(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.close,
+            color: Colors.red,
+            size: 16,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                color: Colors.white60,
+                fontSize: 13,
+              ),
             ),
           ),
         ],
