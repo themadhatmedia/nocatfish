@@ -274,6 +274,47 @@ class ApiService {
     }
   }
 
+  Future<ApiResponse<void>> deleteUser(String token) async {
+    try {
+      final url = Uri.parse('${ApiConfig.apiBaseUrl}${ApiEndpoints.deleteUser}');
+
+      print('\n=== API REQUEST: DELETE USER ===');
+      print('URL: $url');
+      print('Method: DELETE');
+      print('Token: ${token.substring(0, 20)}...');
+
+      final response = await http.delete(
+        url,
+        headers: ApiConfig.getHeaders(token: token),
+      ).timeout(ApiConfig.connectTimeout);
+
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+      print('=== END REQUEST ===\n');
+
+      final jsonData = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return ApiResponse<void>(
+          success: true,
+          message: jsonData['message'] ?? 'Account deleted successfully',
+        );
+      } else {
+        return ApiResponse<void>(
+          success: false,
+          message: jsonData['message'] ?? 'Failed to delete account',
+          errors: jsonData['errors'],
+        );
+      }
+    } catch (e) {
+      print('❌ Delete user error: $e');
+      return ApiResponse<void>(
+        success: false,
+        message: _handleError(e),
+      );
+    }
+  }
+
   Future getUploadLimits(String token) async {
     try {
       final url = Uri.parse('${ApiConfig.apiBaseUrl}${ApiEndpoints.uploadLimits}');

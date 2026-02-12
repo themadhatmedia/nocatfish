@@ -1,7 +1,7 @@
 name: nocatfish_app
 description: Catfish Scan - Privacy-focused photo authenticity detection
 publish_to: 'none'
-version: 1.0.1+5
+version: 1.0.1+6
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -40,6 +40,7 @@ dependencies:
   firebase_core: ^4.3.0
   firebase_analytics: ^12.1.0
   flutter_udid: ^4.1.1
+  in_app_purchase: ^3.2.3
 
 flutter_icons:
   android: "ic_launcher"

@@ -1,6 +1,7 @@
 import 'package:flutter_udid/flutter_udid.dart';
 import 'package:get/get.dart';
 
+import '../config/analytics_events.dart';
 import '../models/api_response.dart';
 import '../services/analytics_service.dart';
 import '../services/api_service.dart';
@@ -361,5 +362,51 @@ class AuthController extends GetxController {
     _isAuthenticated.value = false;
 
     await _storage.clearAuthData();
+  }
+
+  Future<ApiResponse<void>> deleteAccount() async {
+    _isLoading.value = true;
+    _error.value = null;
+
+    try {
+      if (_token.value == null) {
+        _isLoading.value = false;
+        return ApiResponse<void>(
+          success: false,
+          message: 'Not authenticated',
+        );
+      }
+
+      final response = await _apiService.deleteUser(_token.value!);
+
+      if (response.success) {
+        await _analytics.logEvent(
+          name: AnalyticsEvents.accountDeleted,
+          parameters: {
+            AnalyticsParameters.userEmail: user?['email'] ?? 'email@example.com',
+            AnalyticsParameters.userName: user?['name'] ?? 'User',
+          },
+        );
+        await _analytics.clearUser();
+
+        _token.value = null;
+        _user.value = null;
+        _isAuthenticated.value = false;
+
+        await _storage.clearAuthData();
+      } else {
+        _error.value = response.errorMessage;
+      }
+
+      _isLoading.value = false;
+      return response;
+    } catch (e) {
+      _isLoading.value = false;
+      _error.value = 'An unexpected error occurred';
+      return ApiResponse<void>(
+        success: false,
+        message: 'An unexpected error occurred',
+      );
+    }
   }
 }

@@ -11,6 +11,7 @@ class AnalyticsEvents {
   static const String otpRequested = 'otp_requested';
   static const String otpVerified = 'otp_verified';
   static const String otpFailed = 'otp_failed';
+  static const String accountDeleted = 'account_deleted';
 
   // Upload Events
   static const String uploadScreenViewed = 'upload_screen_viewed';

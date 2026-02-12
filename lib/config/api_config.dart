@@ -47,6 +47,7 @@ class ApiEndpoints {
 
   static const String user = '/user';
   static const String updateUser = '/user';
+  static const String deleteUser = '/user';
 
   static const String uploadLimits = '/upload/limits';
   static const String upload = '/upload';
