@@ -246,7 +246,7 @@ class IAPService {
         return;
       }
 
-      final receiptData = purchase.verificationData.serverVerificationData;
+      // final receiptData = purchase.verificationData.serverVerificationData;
       final productId = purchase.productID;
       final planIdString = purchase.purchaseID;
 
