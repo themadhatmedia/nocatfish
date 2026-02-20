@@ -9,6 +9,7 @@ import 'controllers/theme_controller.dart';
 import 'controllers/upload_controller.dart';
 import 'screens/splash_screen.dart';
 import 'services/analytics_service.dart';
+import 'services/iap_service.dart';
 import 'services/storage_service.dart';
 import 'services/stripe_service.dart';
 import 'utils/app_theme.dart';
@@ -27,6 +28,8 @@ void main() async {
   await Firebase.initializeApp();
 
   await Get.putAsync(() => AnalyticsService().init());
+
+  await IAPService().initialize();
 
   Get.put(AuthController());
   Get.put(ThemeController());

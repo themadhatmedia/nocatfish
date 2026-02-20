@@ -10,6 +10,7 @@ class PlanModel {
   // final bool isPremium;
   // final List<String> features;
   final bool isActive;
+  final String? productId;
   // final bool isPopular;
 
   PlanModel({
@@ -23,6 +24,7 @@ class PlanModel {
     // required this.maxDailyUploads,
     // required this.isPremium,
     // required this.features,
+    this.productId,
     this.isActive = false,
     // this.isPopular = false,
   });
@@ -41,6 +43,18 @@ class PlanModel {
       // isPremium: json['is_premium'] ?? false,
       // features: json['features'] != null ? List<String>.from(json['features']) : [],
       isActive: json['is_active'] ?? false,
+      productId: json['product_id'],
+      // productId: json['id'] == 1
+      //     ? 'com.nocatfishscan.app.standard'
+      //     : json['id'] == 2
+      //         ? 'com.nocatfishscan.app.bronze'
+      //         : json['id'] == 3
+      //             ? 'com.nocatfishscan.app.silver'
+      //             : json['id'] == 4
+      //                 ? 'com.nocatfishscan.app.gold'
+      //                 : json['id'] == 5
+      //                     ? 'com.nocatfishscan.app.platinum'
+      //                     : null,
       // isPopular: json['is_popular'] ?? false,
     );
   }
@@ -58,6 +72,7 @@ class PlanModel {
       // 'is_premium': isPremium,
       // 'features': features,
       'is_active': isActive,
+      'product_id': productId,
       // 'is_popular': isPopular,
     };
   }

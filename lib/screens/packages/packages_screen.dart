@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nocatfish_app/controllers/dashboard_controller.dart';
 
+import '../../controllers/dashboard_controller.dart';
 import '../../controllers/plans_controller.dart';
 import '../../models/plan_model.dart';
 import '../../utils/app_theme.dart';
@@ -362,10 +362,19 @@ class _PackagesScreenState extends State<PackagesScreen> {
       bool success;
 
       if (plan.price > 0) {
-        success = await controller.purchasePlanWithStripe(
-          plan.id,
-          plan.price,
-        );
+        if (controller.isIAPAvailable && plan.productId != null) {
+          success = await controller.purchasePlanWithIAP(plan.id);
+        } else {
+          success = await controller.purchasePlanWithStripe(
+            plan.id,
+            plan.price,
+          );
+        }
+
+        // success = await controller.purchasePlanWithStripe(
+        //   plan.id,
+        //   plan.price,
+        // );
       } else {
         success = await controller.purchasePlan(plan.id);
       }

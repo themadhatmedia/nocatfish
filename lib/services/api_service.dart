@@ -283,10 +283,12 @@ class ApiService {
       print('Method: DELETE');
       print('Token: ${token.substring(0, 20)}...');
 
-      final response = await http.delete(
-        url,
-        headers: ApiConfig.getHeaders(token: token),
-      ).timeout(ApiConfig.connectTimeout);
+      final response = await http
+          .delete(
+            url,
+            headers: ApiConfig.getHeaders(token: token),
+          )
+          .timeout(ApiConfig.connectTimeout);
 
       print('Status Code: ${response.statusCode}');
       print('Response Body: ${response.body}');
@@ -821,6 +823,65 @@ class ApiService {
     }
   }
 
+  Future<ApiResponse<UserPlanData>> verifyIAPReceipt({
+    required String token,
+    required String productId,
+    required String receiptData,
+    required String transactionId,
+    required String platform,
+  }) async {
+    try {
+      final url = Uri.parse('${ApiConfig.apiBaseUrl}${ApiEndpoints.verifyIAP}');
+      final body = {
+        'product_id': productId,
+        'receipt_data': receiptData,
+        'transaction_id': transactionId,
+        'platform': platform,
+      };
+
+      print('\n=== API REQUEST: VERIFY IAP RECEIPT ===');
+      print('URL: $url');
+      print('Method: POST');
+      print('Token: ${token.substring(0, 20)}...');
+      print('Product ID: $productId');
+      print('Platform: $platform');
+
+      final response = await http
+          .post(
+            url,
+            headers: ApiConfig.getHeaders(token: token),
+            body: jsonEncode(body),
+          )
+          .timeout(ApiConfig.connectTimeout);
+
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+      print('=== END REQUEST ===\n');
+
+      final jsonData = jsonDecode(response.body);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return ApiResponse<UserPlanData>(
+          success: true,
+          message: jsonData['message'] ?? 'Purchase verified successfully',
+          data: UserPlanData.fromJson(jsonData['data']),
+        );
+      } else {
+        return ApiResponse<UserPlanData>(
+          success: false,
+          message: jsonData['message'] ?? 'Failed to verify purchase',
+          errors: jsonData['errors'],
+        );
+      }
+    } catch (e) {
+      print('❌ Verify IAP receipt error: $e');
+      return ApiResponse<UserPlanData>(
+        success: false,
+        message: _handleError(e),
+      );
+    }
+  }
+
   Future<ApiResponse<void>> sendOtp({
     required String phoneNumber,
     required String countryCode,
@@ -1097,5 +1158,22 @@ class ApiService {
     } else {
       return 'An unexpected error occurred. Please try again.';
     }
+  }
+}
+
+class PaymentIntentResponse {
+  final String clientSecret;
+  final String paymentIntentId;
+
+  PaymentIntentResponse({
+    required this.clientSecret,
+    required this.paymentIntentId,
+  });
+
+  factory PaymentIntentResponse.fromJson(Map<String, dynamic> json) {
+    return PaymentIntentResponse(
+      clientSecret: json['client_secret'] ?? json['clientSecret'] ?? '',
+      paymentIntentId: json['payment_intent_id'] ?? json['paymentIntentId'] ?? '',
+    );
   }
 }

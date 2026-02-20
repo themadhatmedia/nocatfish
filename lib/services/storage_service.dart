@@ -43,7 +43,8 @@ class StorageService {
   String? getToken() {
     final token = read<String>('auth_token');
     print('\n=== STORAGE: GET TOKEN ===');
-    print('Token: ${token?.substring(0, 20) ?? "null"}');
+    // print('Token: ${token?.substring(0, 20) ?? "null"}');
+    print('Token: ${token ?? "null"}');
     print('=== END STORAGE ===\n');
     return token;
   }

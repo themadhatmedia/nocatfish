@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
 import '../models/plan_model.dart';
 import '../services/analytics_service.dart';
 import '../services/api_service.dart';
+import '../services/iap_service.dart';
 import '../services/storage_service.dart';
 import '../services/stripe_service.dart';
 
@@ -11,6 +14,7 @@ class PlansController extends GetxController {
   final ApiService _apiService = ApiService();
   final StorageService _storageService = StorageService();
   final StripeService _stripeService = StripeService();
+  final IAPService _iapService = IAPService();
   late final AnalyticsService _analytics;
 
   final RxBool _isLoading = false.obs;
@@ -32,7 +36,24 @@ class PlansController extends GetxController {
   void onInit() {
     super.onInit();
     _analytics = Get.find<AnalyticsService>();
+    _initializeIAP();
     loadPlans();
+  }
+
+  Future<void> _initializeIAP() async {
+    await _iapService.initialize();
+
+    _iapService.onPurchaseSuccess = (purchase) {
+      debugPrint('✅ IAP Purchase successful in controller');
+      _isPurchasing.value = false;
+      loadCurrentPlan();
+    };
+
+    _iapService.onPurchaseError = (error) {
+      debugPrint('❌ IAP Purchase error in controller: $error');
+      _error.value = error;
+      _isPurchasing.value = false;
+    };
   }
 
   Future<void> loadPlans() async {
@@ -62,6 +83,9 @@ class PlansController extends GetxController {
           );
         }
         _errorplans.value = '';
+        if (_iapService.isAvailable && _plans.isNotEmpty) {
+          await _iapService.loadProducts(_plans);
+        }
       } else {
         _errorplans.value = response.errorMessage;
       }
@@ -155,6 +179,54 @@ class PlansController extends GetxController {
     }
   }
 
+  Future<bool> purchasePlanWithIAP(int planId) async {
+    _isPurchasing.value = true;
+    _error.value = '';
+
+    final plan = _plans.firstWhereOrNull((p) => p.id == planId);
+    if (plan == null || plan.productId == null) {
+      _error.value = 'Plan not found or not configured for IAP';
+      _isPurchasing.value = false;
+      return false;
+    }
+
+    final planName = plan.name;
+    // final scans = plan.scans;
+
+    await _analytics.logPurchaseStarted(
+      packageId: planId.toString(),
+      packageName: planName,
+      price: plan.price,
+      paymentMethod: 'iap',
+    );
+
+    try {
+      final success = await _iapService.purchaseProduct(
+        plan.productId!,
+        planId: planId.toString(),
+      );
+
+      if (!success) {
+        await _analytics.logPurchaseFailed(
+          packageId: planId.toString(),
+          errorMessage: 'Failed to initiate IAP purchase',
+          paymentMethod: 'iap',
+        );
+      }
+
+      return success;
+    } catch (e) {
+      _error.value = 'Failed to purchase plan: $e';
+      _isPurchasing.value = false;
+      await _analytics.logPurchaseFailed(
+        packageId: planId.toString(),
+        errorMessage: e.toString(),
+        paymentMethod: 'iap',
+      );
+      return false;
+    }
+  }
+
   Future<bool> purchasePlan(int planId) async {
     _isPurchasing.value = true;
     _error.value = '';
@@ -188,6 +260,18 @@ class PlansController extends GetxController {
       return false;
     }
   }
+
+  Future<void> restorePurchases() async {
+    _isLoading.value = true;
+    try {
+      await _iapService.restorePurchases();
+    } catch (e) {
+      _error.value = 'Failed to restore purchases: $e';
+    }
+    _isLoading.value = false;
+  }
+
+  bool get isIAPAvailable => _iapService.isAvailable && (Platform.isIOS || Platform.isAndroid);
 
   Future<bool> cancelPlan() async {
     _isPurchasing.value = true;

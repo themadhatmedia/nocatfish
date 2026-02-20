@@ -7,6 +7,10 @@ class ApiConfig {
 
   static String get apiBaseUrl => useLocalApi ? localBaseUrl : baseUrl;
 
+  // 🔧 DEV MODE: Enable mock IAP for testing without Play Store
+  // Set to false before building release for Play Store
+  static const bool enableMockIAP = false;
+
   static const Duration connectTimeout = Duration(seconds: 30);
   static const Duration receiveTimeout = Duration(seconds: 30);
 
@@ -66,4 +70,7 @@ class ApiEndpoints {
   static const String currentPlan = '/plans/current';
   static const String purchasePlan = '/plans/purchase';
   static const String cancelPlan = '/plans/cancel';
+
+  static const String createPaymentIntent = '/payments/create-intent';
+  static const String verifyIAP = '/payments/verify-iap';
 }
