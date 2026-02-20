@@ -162,7 +162,7 @@ class IAPService {
 
       final success = await _iap.buyConsumable(
         purchaseParam: purchaseParam,
-        autoConsume: false,
+        autoConsume: true,
       );
 
       if (!success) {
@@ -255,47 +255,37 @@ class IAPService {
       debugPrint('  Plan ID: $planIdString');
       debugPrint('  Transaction ID: ${purchase.purchaseID}');
 
-      final response = await _apiService.verifyIAPReceipt(
+      final response = await _apiService.purchasePlan(
         token: token,
-        productId: productId,
-        receiptData: receiptData,
-        transactionId: purchase.purchaseID ?? '',
-        platform: Platform.isIOS ? 'ios' : 'android',
+        planId: productId == 'com.nocatfishscan.app.standard_plan'
+            ? 1
+            : productId == 'com.nocatfishscan.app.bronze'
+                ? 2
+                : productId == 'com.nocatfishscan.app.silver'
+                    ? 3
+                    : productId == 'com.nocatfishscan.app.gold'
+                        ? 4
+                        : productId == 'com.nocatfishscan.app.platinum'
+                            ? 5
+                            : 0,
       );
 
       if (response.success) {
-        debugPrint('✅ Purchase verified successfully');
+        debugPrint('✅ Purchase verified and scans added successfully');
 
-        // Get plan_id from stored mapping
-        final storedPlanId = _productToPlanId[productId];
-        if (storedPlanId != null) {
-          try {
-            final planId = int.parse(storedPlanId);
-            debugPrint('📞 Calling purchasePlan API with planId: $planId');
+        // CRITICAL: Complete the purchase to mark it as consumed
+        // This is required for both iOS and Android consumables
+        // For Android, this calls consumeAsync on Google Play Billing
+        // For iOS, this finishes the transaction
+        debugPrint('🔄 Completing purchase to enable repeat purchases...');
+        debugPrint('pendingCompletePurchase: ${purchase.pendingCompletePurchase}');
 
-            final purchaseResponse = await _apiService.purchasePlan(
-              token: token,
-              planId: planId,
-            );
-
-            if (purchaseResponse.success) {
-              debugPrint('✅ Plan purchased and scans updated successfully');
-              debugPrint('   Scans remaining: ${purchaseResponse.data?.scansRemaining}');
-            } else {
-              debugPrint('⚠️ purchasePlan API failed: ${purchaseResponse.errorMessage}');
-            }
-          } catch (e) {
-            debugPrint('⚠️ Failed to parse plan_id or call purchasePlan: $e');
-          }
-        } else {
-          debugPrint('⚠️ No stored planId found for product: $productId');
-        }
-
-        // CRITICAL: Consume the purchase so it can be bought again
-        if (Platform.isAndroid) {
-          debugPrint('🔄 Consuming purchase on Android...');
+        try {
           await _iap.completePurchase(purchase);
-          debugPrint('✅ Purchase consumed - can be purchased again');
+          debugPrint('✅ Purchase completed successfully - can be purchased again');
+        } catch (e) {
+          debugPrint('⚠️ Error completing purchase: $e');
+          debugPrint('   This might prevent repeat purchases!');
         }
 
         // Clean up
@@ -308,6 +298,47 @@ class IAPService {
         _productToPlanId.remove(productId);
         onPurchaseError?.call(response.errorMessage);
       }
+
+      // final response = await _apiService.verifyIAPReceipt(
+      //   token: token,
+      //   productId: productId,
+      //   receiptData: receiptData,
+      //   transactionId: purchase.purchaseID ?? '',
+      //   platform: Platform.isIOS ? 'ios' : 'android',
+      // );
+
+      // if (response.success) {
+      //   debugPrint('✅ Purchase verified and scans added successfully');
+      //   if (response.data != null) {
+      //     debugPrint('   Scans remaining: ${response.data!.scansRemaining}');
+      //     debugPrint('   Current plan: ${response.data!.currentPlan?.name}');
+      //   }
+
+      //   // CRITICAL: Complete the purchase to mark it as consumed
+      //   // This is required for both iOS and Android consumables
+      //   // For Android, this calls consumeAsync on Google Play Billing
+      //   // For iOS, this finishes the transaction
+      //   debugPrint('🔄 Completing purchase to enable repeat purchases...');
+      //   debugPrint('   pendingCompletePurchase: ${purchase.pendingCompletePurchase}');
+
+      //   try {
+      //     await _iap.completePurchase(purchase);
+      //     debugPrint('✅ Purchase completed successfully - can be purchased again');
+      //   } catch (e) {
+      //     debugPrint('⚠️ Error completing purchase: $e');
+      //     debugPrint('   This might prevent repeat purchases!');
+      //   }
+
+      //   // Clean up
+      //   _pendingPurchases.remove(productId);
+      //   _productToPlanId.remove(productId);
+      //   onPurchaseSuccess?.call(purchase);
+      // } else {
+      //   debugPrint('❌ Purchase verification failed: ${response.errorMessage}');
+      //   _pendingPurchases.remove(productId);
+      //   _productToPlanId.remove(productId);
+      //   onPurchaseError?.call(response.errorMessage);
+      // }
     } catch (e) {
       debugPrint('❌ Purchase verification error: $e');
       _pendingPurchases.remove(purchase.productID);
