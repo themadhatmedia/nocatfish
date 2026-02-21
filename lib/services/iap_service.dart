@@ -2,11 +2,14 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 
 import '../config/api_config.dart';
+import '../controllers/dashboard_controller.dart';
+import '../controllers/plans_controller.dart';
 import '../models/plan_model.dart';
 import 'api_service.dart';
 import 'storage_service.dart';
@@ -271,6 +274,12 @@ class IAPService {
       );
 
       if (response.success) {
+        final controller = Get.put(PlansController());
+        final dbcontroller = Get.put(DashboardController());
+        Future.delayed(Duration(seconds: 1));
+        controller.loadPlans();
+        Future.delayed(Duration(seconds: 1));
+        dbcontroller.loadDashboard();
         debugPrint('✅ Purchase verified and scans added successfully');
 
         // CRITICAL: Complete the purchase to mark it as consumed
